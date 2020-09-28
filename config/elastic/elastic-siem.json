@@ -1,0 +1,25 @@
+{
+    "sigma_query_format": "es-qs",
+    "settings": {
+        "rule_id": "",
+        "id": "",
+        "author":[],
+        "from":"",
+        "index":[],
+        "interval":"",
+        "language":"kuery",
+        "output_index":".siem-signals-default",
+        "references":[],
+        "falsepositives":[],
+        "risk_score":0,
+        "name":"",
+        "description":"",
+        "query":"",
+        "severity":"",
+        "tags":[],
+        "to":"now",
+        "type":"query",
+        "threat":[],
+        "throttle":"no_actions"
+    }
+}

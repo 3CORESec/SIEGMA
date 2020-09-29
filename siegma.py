@@ -8,7 +8,7 @@ import subprocess
 from pyattck import Attck
 from pprint import pprint
 from rule_file_creator_scripts import es_qs
-from helpers.utils import setup_logger, config_file_to_dict
+from helpers.utils import setup_logger, config_file_to_dict, get_slash_set_path
 
 
 # global vars
@@ -18,18 +18,6 @@ args = None
 slash = '/'
 attack = Attck()
 #############
-
-def get_slash_set_path(path):
-	slash = '/'
-	if os.name == 'nt':
-		slash = '\\'
-		logger.info('Windows machine. Slashes set to {}...'.format(slash))
-		path = path.replace('/', slash)
-	else:
-		logger.info('Linux machine. Slashes set to {}...'.format(slash))
-		path = path.replace('\\', slash)
-	logger.debug('Updated path: {}'.format(path))
-	return path
 
 
 def empty_output_file(output='.output.ndjson'):
@@ -123,12 +111,12 @@ def load_yaml_rule_into_json(yj_rule):
 	return yj_rule
 
 
-def create_rule_file_for_siem(sigma_query_format, config, query, yj_rule, output):
+def create_rule_file_for_siem(sigma_query_format, config, credentials, query, yj_rule, output):
 	rule_file = None
 	config_copy = copy.deepcopy(config)
 	yj_rule = load_yaml_rule_into_json(yj_rule)
 	if sigma_query_format in ['es-qs']:
-		rule_file = es_qs.create_rule(config_copy, query, yj_rule, attack, output, logger)
+		rule_file = es_qs.create_rule(config_copy, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger)
 	return rule_file
 
 
@@ -162,14 +150,21 @@ def get_all_rule_files(rule_path):
 	return ret
 
 
+def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name):
+	if sigma_query_format in ['es-qs']:
+		if es_qs.valid_credentials(credentials, logger):
+			es_qs.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, logger)
+
+
 def main():
 	try:
 		initialize_g_vars()
 		empty_output_file(output=args.output)
 		for rule in get_all_rule_files(args.rule):
 			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule)
-			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), query, rule, args.output)
+			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output)
 			logger.info('Output file name: {}...'.format(out_file_name))
+		install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
 	except Exception as e:
 		logger.error('Exception {} occurred in main of file {}...'.format(e, os.path.basename(__file__)))
 

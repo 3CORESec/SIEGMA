@@ -17,6 +17,16 @@ def create_log_file(log_file_name):
 	with open(log_file_name, 'w') as o: pass
 
 
+def get_slash_set_path(path):
+	slash = '/'
+	if os.name == 'nt':
+		slash = '\\'
+		path = path.replace('/', slash)
+	else:
+		path = path.replace('\\', slash)
+	return path
+
+
 def setup_logger(log_fmt="%(log_color)s%(asctime)s:%(levelname)s:%(message)s", log_file_name=".output.log", level='DEBUG'):
 
 	# a new log file is created each time.

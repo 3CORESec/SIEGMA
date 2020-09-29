@@ -1,7 +1,10 @@
+import os
 import re
 import copy
 import json
+import subprocess
 from pprint import pprint
+from helpers.utils import get_slash_set_path
 
 
 def get_author_name(yj_rule):
@@ -183,7 +186,67 @@ def get_mitre_ttps(attack, yj_rule):
     return ret
 
 
-def create_rule(config, query, yj_rule, attack, output, logger):
+def valid_credentials(credentials, logger):
+    ret = False
+    creds_exist = username_exist = password_exist = url_exist = False
+    if credentials and credentials is not None:
+        creds_exist = True
+        logger.debug('Credentials key exists...')
+        logger.debug('Checking further...')
+        if 'kibana_username' in credentials:
+            if credentials.get('kibana_username') and credentials.get('kibana_username') != '':
+                username_exist = True
+                logger.debug('Kibana_username exists...')
+        if 'kibana_password' in credentials:
+            if credentials.get('kibana_password') and credentials.get('kibana_password') != '':
+                password_exist = True
+                logger.debug('kibana_password exists...')
+        if 'kibana_url' in credentials:
+            if credentials.get('kibana_url') and credentials.get('kibana_url') != '':
+                url_exist = True
+                logger.debug('kibana_url exists...')
+    if creds_exist and username_exist and password_exist and url_exist:
+        ret = True
+        logger.info('Exisiting creds found. Output file shall be uploaded to ELK...')
+    else:
+        ret = False
+        logger.info('No creds found. Output file shall not be uploaded to ELK...')
+    return ret
+
+
+def install_rules(script_dir, credentials, rule_file, logger):
+    # if windows, execute these commands
+    curl_path = get_slash_set_path(script_dir + '/helpers/curl/curl.exe')
+    logger.debug('Script Dir: {}'.format(curl_path))
+    result = result_out = None
+    query = None
+    # if windows machine
+    if os.name == 'nt':
+        command = "powershell -nop -c \"{} {};\"".format(curl_path, "-X POST \"{}/api/detection_engine/rules/_import?overwrite=true\" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form 'file=@{}'".format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file))
+        logger.info('Command: '.format(command))
+        logger.info('Windows powershell command shall be executed...')
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        result_out = json.loads(result.stdout.decode('utf-8'))
+        result_error = result.stderr.decode('utf-8')
+        logger.debug(result_out)
+        logger.error(result_error)
+    # if linux machine
+    else:
+        command = """curl -X POST "{}/api/detection_engine/rules/_import?overwrite=true" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form "file=@{}" """.format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file)
+        logger.info('Command: '.format(command))
+        logger.info('Linux shell shall be executed...')
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+        proc_stdout = process.communicate()[0].strip().decode('utf-8')
+        print(proc_stdout)
+        result_out = json.loads(proc_stdout)
+        logger.debug(result_out)
+    logger.info('Import Successful: {}...'.format(result_out.get('success')))
+    logger.info('Count Successfully Imported Rules: {}...'.format(result_out.get('success_count')))
+    logger.info('Import Errors: {}...'.format(result_out.get('errors')))
+    return query
+
+
+def create_rule(config, credentials, query, yj_rule, attack, output, script_dir, logger):
     logger.info('Starting create_es_qs_rule()...')
     rule_file = None
     logger.debug(config)

@@ -1,10 +1,12 @@
 # SIΣGMA
 
-This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format and engine.
+This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format and engine. 
 
 <p align="center"><img align="center" src="https://i.imgur.com/laf6vv6.png"></p>
 
-It is also our objective to keep SIEM schemas documented and community-maintained, so you are free to make contributions from a data as well as a programming perspective. Help is welcome!
+It is also our objective to take a community approach to SIEM schemas, maintaing easy to read data dictionaries while making it trivial to add custom fields based on specific use cases *(i.e quickly add a field to your SIEM configuration file)*
+
+How does it differ from `sigmac`? It doesn't. The reason we decided to create our own artifacts is to have more control over the mappings and allow for a different level of automation. This project is not mean to be a replacement to Sigma or `sigmac`, especially since it utilizes `sigmac`. 
 
 ## Supported SIEM's
 

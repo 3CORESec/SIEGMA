@@ -74,7 +74,9 @@ An example where we utilize our [AWS CloudTrail Sigma configuration](https://blo
 
 `python siegma.py -c config/elastic/elastic-siem.json -r rules/cloudtrail_rule.yml -sv /path/to/sigma/virtualenv -s sigma/ -sc sigma/tools/config/ecs-cloudtrail.yml -o rule-output`
 
-Once files are created they can be imported into the platform. Support to automate this process is currently being developed.
+## SIEM automatic import feature
+
+If you'd like to enable the feature where the created artifact is automatically updated into your SIEM, please enter the environment variables that are specific to your environment and document in the [config](config/) of your platform. 
 
 # Contributions and Development
 
@@ -84,7 +86,6 @@ Want to know more how it all comes together or want to contribute support for a 
 
 - Additional platform/SIEM support
   - Splunk is currently in development
-- Dispatcher functionality - Automatically upload to your SIEM after creating the consumable
 
 # Feedback
 

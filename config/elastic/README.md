@@ -7,8 +7,8 @@ This folder holds the configuration file for a specific platform. An explanation
 | Elastic SIEM Config Field | Description                                                       | Example                                              | 
 |---------------------------|-------------------------------------------------------------------|-------------------------------------------------------
 | from                      | No need to change if you're using `timeframe` in your Sigma rules | now-15m                                              |
-| timeline_id               | Not included in the configuration, but can be added               | "timeline_id":"e17d2870-6bb5-11ea-9871-d10df4e7cd14" |
-| timeline_title            | Not included in the configuration, but can be added               | "timeline_title":"AWS Cloud Trail"                   |
+| timeline_id               | Not included in the configuration but can be added               | "timeline_id":"e17d2870-6bb5-11ea-9871-d10df4e7cd14" |
+| timeline_title            | Not included in the configuration but can be added               | "timeline_title":"AWS Cloud Trail"                   |
 
 
 ## Elastic SIEM Configuration & Data Dictionary 
@@ -18,7 +18,7 @@ This folder holds the configuration file for a specific platform. An explanation
 | sigma_query_format         | es-qs                 | Hardcoded                | Preset value. This value is passed to sigmac                          |
 | kibana_username            | No default value      | User input optional      | Enables automatic rule upload if filled                               |
 | kibana_password            | No default value      | User input optional      | Enables automatic rule upload if filled                               |
-| kibana_url                 | No default value      | User input optional      | Enables automatic rule upload if filled (i.e http//kibana_url:port)   | 
+| kibana_url                 | No default value      | User input optional      | Enables automatic rule upload if filled (i.e http://kibana_url:port)  | 
 | rule_id                    | No default value      | Sigma: id                | Rule identifier                                                       |
 | id                         | No default value      | Sigma: id                | Rule identifier                                                       |
 | author                     | No default value      | Sigma: author            | Rule author                                                           |

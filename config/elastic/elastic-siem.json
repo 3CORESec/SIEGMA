@@ -25,6 +25,7 @@
         "to":"now",
         "type":"query",
         "threat":[],
-        "throttle":"no_actions"
+        "throttle":"no_actions",
+        "timeline_id":""
     }
 }

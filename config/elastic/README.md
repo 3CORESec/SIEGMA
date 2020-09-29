@@ -42,3 +42,4 @@ Please change these in the configuration before running SIEGMA.
 | type                | query                 | Hardcoded                | Preset field and value. Don't change                                  | Yes                          |
 | threat              | No default value      | Sigma: tags              | ATT&CK mapping                                                        | No                           |
 | throttle            | no_actions            | Hardcoded                | Preset field and value. Don't change                                  | Yes                          |
+| timeline_id         | No default value      | Hardcoded                | Timeline ID to be defined by the user                                 | No                           |

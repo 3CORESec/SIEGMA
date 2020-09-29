@@ -1,5 +1,10 @@
 {
     "sigma_query_format": "es-qs",
+    "credentials": {    
+        "kibana_username": "",
+        "kibana_password": "",
+        "kibana_url": ""
+    },
     "settings": {
         "rule_id": "",
         "id": "",

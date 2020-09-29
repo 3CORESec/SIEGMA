@@ -25,7 +25,7 @@ Please change these in the configuration before running SIEGMA.
 | language            | kuery                 | Hardcoded                | Preset field and value. Don't change                                  | Yes                          |
 | output_index        | .siem-signals-default | Hardcoded                | Default index used by Elastic SIEM                                    | No                           |
 | references          | No default value      | Sigma: references        | References and documentation related to the detection                 | No                           |
-| falsepositives      | No default value      | Sigma: falsepositives    | Situation under which a false positive can trigger the detection      | No                           |
+| false_positives      | No default value      | Sigma: falsepositives    | Situation under which a false positive can trigger the detection      | No                           |
 | risk_score          | No default value      | Sigma: severity          | low=25, medium=50, high=75, critical=100                              | Yes                          |
 | name                | No default value      | Sigma: name              | Rule name                                                             | Yes                          |
 | description         | No default value      | Sigma: description       | Rule description                                                      | Yes                          |

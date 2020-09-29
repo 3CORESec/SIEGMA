@@ -24,7 +24,7 @@ Please change these in the configuration before running SIEGMA.
         "language":"kuery", -> # Required. Preset field and value. Do not change.
         "output_index":"", -> # Required. Value needs to be set in config. Defines the index where the results for query execution and search should be saved. Eg: search_results.
         "references":[], -> # Value is taken from the references field in Sigma rule.
-        "falsepositives":[], -> # Value is taken from the falsepositives field in Sigma rule.
+        "false_positives":[], -> # Value is taken from the falsepositives field in Sigma rule.
         "risk_score":0, -> # Value is automatically set and taken from the severity level field from Sigma rule. low=25. medium=50. high=75. critical=100.
         "name":"", -> # Value is taken from the name field in Sigma rule.
         "description":"", -> # Value is taken from the description field in Sigma rule.

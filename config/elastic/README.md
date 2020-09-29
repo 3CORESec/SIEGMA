@@ -5,12 +5,13 @@ This folder holds the configuration file for a specific platform. An explanation
 **Fields that are environment specific or for which there is no mapping in Sigma and require modification in the configuration file:**
 
 * index
-* from *(no need to change if you're using `timestamp` in Sigma)*
+* from *(no need to change if you're using `timeframe` in Sigma)*
 * interval
 
 Please change these in the configuration before running SIEGMA.
 
 ## Elastic SIEM Fields:
+
 ```
 {
     "sigma_query_format": "es-qs", -> # Required field & value pair for Kibana ndjson type file query creation. This value is passed to sigmac as -t switch to create the appropriate query that can be embedded in the Elastic SIEM ndjson.

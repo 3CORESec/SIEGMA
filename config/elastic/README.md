@@ -4,9 +4,9 @@ This folder holds the configuration file for a specific platform. An explanation
 
 **Fields that are environment specific or for which there is no mapping in Sigma and require modification in the configuration file:**
 
+* from *(no need to change if you're using `timeframe` in your Sigma rules)*
 * index
 * interval
-* from *(no need to change if you're using `timeframe` in Sigma)*
 
 Please change these in the configuration before running SIEGMA.
 

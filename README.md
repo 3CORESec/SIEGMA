@@ -6,6 +6,8 @@ This project aims to automate the creation of SIEM rule consumables by leveragin
 
 It is also our objective to keep SIEM schemas documented and community-maintained, so you are free to make contributions from a data as well as a programming perspective. Help is welcome!
 
+How does it differ from `sigmac`? It doesn't. The reason we decided to create our own artifacts is to have more control over the mappings and allow for a different level of automation. This project is not mean to be a replacement to Sigma or `sigmac`. 
+
 ## Supported SIEM's
 
 * Elastic SIEM

@@ -10,6 +10,8 @@ This folder holds the configuration file for a specific platform. An explanation
 * kibana_username
 * kibana_password
 * kibana_url
+* timeline_id
+* timeline_title
 
 Please change these in the configuration before running SIEGMA.
 
@@ -42,4 +44,5 @@ Please change these in the configuration before running SIEGMA.
 | type                | query                 | Hardcoded                | Preset field and value. Don't change                                  | Yes                          |
 | threat              | No default value      | Sigma: tags              | ATT&CK mapping                                                        | No                           |
 | throttle            | no_actions            | Hardcoded                | Preset field and value. Don't change                                  | Yes                          |
-| timeline_id         | No default value      | Hardcoded                | Timeline ID to be defined by the user                                 | No                           |
+| timeline_id         | No default value      | Hardcoded                | Timeline ID to be defined by the user. Rule can be created successfully if the key is completely omitted| Yes                          |
+| timeline_title      | No default value      | Hardcoded                | Timeline Title to be defined by the user. Rule can be created successfully if the key is completely omitted| Yes                          |

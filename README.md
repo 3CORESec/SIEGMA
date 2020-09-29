@@ -4,7 +4,7 @@ This project aims to automate the creation of SIEM rule consumables by leveragin
 
 <p align="center"><img align="center" src="https://i.imgur.com/laf6vv6.png"></p>
 
-It is also our objective to take a community approach to SIEM schemas, maintaing easy to read data dictionaries while making it trivial to add custom fields based on specific use cases *(i.e quickly add a field to your SIEM configuration file)*
+It is also our objective to take a community approach to SIEM schemas, maintaing easy to read data dictionaries while making it trivial to add custom fields based on specific use cases *(i.e quickly add a field to your SIEM configuration file)*. For platforms that support it, SIΣGMA also enables automatic upload of the SIEM consumable. Check the [Automatic Import](https://github.com/3CORESec/SIEGMA#siem-automatic-import-feature) section for more information.
 
 How does it differ from `sigmac`? It doesn't. The reason we decided to create our own artifacts is to have more control over the mappings and allow for a different level of automation. This project is not mean to be a replacement to Sigma or `sigmac`, especially since it utilizes `sigmac`. 
 

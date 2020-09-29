@@ -10,7 +10,7 @@ This folder holds the configuration file for a specific platform. An explanation
 
 Please change these in the configuration before running SIEGMA.
 
-## Elastic SIEM Fields:
+## Elastic SIEM Configuration:
 
 | Elastic SIEM Config | Value                 | Field type               | Description                                                           |
 |---------------------|-----------------------|--------------------------|-----------------------------------------------------------------------|
@@ -25,7 +25,7 @@ Please change these in the configuration before running SIEGMA.
 | output_index        | .siem-signals-default | Hardcoded                | Default index used by Elastic SIEM                                    |
 | references          | No default value      | Sigma: references        | References and documentation related to the detection                 |
 | falsepositives      | No default value      | Sigma: falsepositives    | Situation under which a false positive can trigger the detection      |
-| risk_score          | No default value      | Sigma: severity          | low=25. medium=50. high=75. critical=100                              |
+| risk_score          | No default value      | Sigma: severity          | low=25, medium=50, high=75, critical=100                              |
 | name                | No default value      | Sigma: name              | Rule name                                                             |
 | description         | No default value      | Sigma: description       | Rule description                                                      |
 | query               | No default value      | Hardcoded                | Comes from the result of running sigmac                               |

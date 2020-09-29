@@ -78,7 +78,7 @@ An example where we utilize our [AWS CloudTrail Sigma configuration](https://blo
 
 ## SIEM automatic import feature
 
-If you'd like to enable the feature where the created artifact is automatically updated into your SIEM, please enter the environment variables that are specific to your environment and document in the [config](config/) of your platform. 
+If you'd like to enable the feature where the created artifact is automatically updated into your SIEM, please enter the environment variables that are specific to your environment and documented in the [config](config/) of your platform. 
 
 # Contributions and Development
 

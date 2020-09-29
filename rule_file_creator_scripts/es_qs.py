@@ -210,7 +210,7 @@ def create_rule(config, query, yj_rule, attack, output, logger):
     # rule ID set
     config['rule_id'] = config['id'] = yj_rule.get('id')
     # time set
-    config['from'] = 'now-' + yj_rule.get('detection').get('timeframe') if 'timeframe' in yj_rule.get('detection') else ''
+    if 'timeframe' in yj_rule.get('detection'): config['from'] = 'now-' + yj_rule.get('detection').get('timeframe')
     #############
     logger.info('Final config:')
     pprint(config)

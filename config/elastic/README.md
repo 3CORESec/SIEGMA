@@ -18,7 +18,7 @@ This folder holds the configuration file for a specific platform. An explanation
 | sigma_query_format         | es-qs                 | Hardcoded                | Preset value. This value is passed to sigmac                          |
 | kibana_username            | No default value      | User input optional      | Enables automatic rule upload if filled                               |
 | kibana_password            | No default value      | User input optional      | Enables automatic rule upload if filled                               |
-| kibana_url                 | No default value      | User input optional      | Enables automatic rule upload if filled (i.e http://kibana_url:port)  | 
+| kibana_url                 | No default value      | User input optional      | Enables automatic rule import if filled (i.e http://my_kibana:5601)   | 
 | rule_id                    | No default value      | Sigma: id                | Rule identifier                                                       |
 | id                         | No default value      | Sigma: id                | Rule identifier                                                       |
 | author                     | No default value      | Sigma: author            | Rule author                                                           |

@@ -222,8 +222,8 @@ def install_rules(script_dir, credentials, rule_file, logger):
     query = None
     # if windows machine
     if os.name == 'nt':
-        command = "powershell -nop -c \"{} {};\"".format(curl_path, "-X POST \"{}/api/detection_engine/rules/_import?overwrite=true\" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form 'file=@{}'".format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file))
-        logger.info('Command: '.format(command))
+        command = 'powershell -nop -c \"{} {};\"'.format(curl_path, "-X POST \"{}/api/detection_engine/rules/_import?overwrite=true\" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form 'file=@{}'".format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file))
+        logger.info('Command: {}'.format(command))
         logger.info('Windows powershell command shall be executed...')
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         result_out = json.loads(result.stdout.decode('utf-8'))

@@ -34,7 +34,7 @@ def setup_args():
 	parser.add_argument('-sc', '--sigma_config', metavar='<sigma_config_file>', type=str, default='', help='Sigma config file path. Eg: /path/to/sigma/tools/config/ecs-cloudtrail.yml.')
 	parser.add_argument('-sv', '--sigma_venv', metavar='<sigma_python_venv>', type=str, default='', help='Sigma repository Python virtual environment path. Eg: /path/to/sigma/.venv3.')
 	parser.add_argument('-o', '--output', metavar='<output_file>', type=str, default='.output', help='Output file path. Eg: /path/to/output_file.')
-	parser.add_argument('-t', '--testing', metavar='<output_file>', type=bool, default=False, help='Switch for testing. Default "False". If testing, output file will be created but the rule file will not be installed on SIEM. Eg: -t True or --testing True.')
+	parser.add_argument('-t', '--testing', dest='testing', action='store_true', help='Switch for testing. Default "False". If testing, output file will be created but the rule file will not be installed on SIEM. Eg: -t or --testing.')
 	# parser.add_argument('-v', '--verbosity', metavar='<verbosity_level>', type=str, default='INFO', help='Execution verbosity level. Eg: SUCCESS|WARN|INFO|DEBUG.')
 	logger.info('Arguments parsed successfully...')
 	return parser.parse_args()
@@ -165,7 +165,10 @@ def main():
 			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule)
 			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
-		install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
+		if not args.testing:
+			install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
+		else:
+			logger.info('No rules installed on SIEM since Testing switch is enabled...')
 	except Exception as e:
 		logger.error('Exception {} occurred in main of file {}...'.format(e, os.path.basename(__file__)))
 

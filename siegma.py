@@ -34,6 +34,7 @@ def setup_args():
 	parser.add_argument('-sc', '--sigma_config', metavar='<sigma_config_file>', type=str, default='', help='Sigma config file path. Eg: /path/to/sigma/tools/config/ecs-cloudtrail.yml.')
 	parser.add_argument('-sv', '--sigma_venv', metavar='<sigma_python_venv>', type=str, default='', help='Sigma repository Python virtual environment path. Eg: /path/to/sigma/.venv3.')
 	parser.add_argument('-o', '--output', metavar='<output_file>', type=str, default='.output', help='Output file path. Eg: /path/to/output_file.')
+	parser.add_argument('-t', '--testing', metavar='<output_file>', type=bool, default=False, help='Switch for testing. Default "False". If testing, output file will be created but the rule file will not be installed on SIEM. Eg: -t True or --testing True.')
 	# parser.add_argument('-v', '--verbosity', metavar='<verbosity_level>', type=str, default='INFO', help='Execution verbosity level. Eg: SUCCESS|WARN|INFO|DEBUG.')
 	logger.info('Arguments parsed successfully...')
 	return parser.parse_args()

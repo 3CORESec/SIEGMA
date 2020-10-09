@@ -214,16 +214,22 @@ def valid_credentials(credentials, logger):
     return ret
 
 
+def handle_response_errors(status_code, message, logger):
+    if status_code == 400 and 'invalid file extension'.lower() in message.lower():
+        logger.error('Use .ndjson as the file extension for output file...')
+
+
 def install_rules(script_dir, credentials, rule_file, logger):
     # if windows, execute these commands
     curl_path = get_slash_set_path(script_dir + '/helpers/curl/curl.exe')
     logger.debug('Script Dir: {}'.format(curl_path))
+    logger.debug('Rule Output File: {}'.format(rule_file))
     result = result_out = None
     query = None
     # if windows machine
     if os.name == 'nt':
         command = 'powershell -nop -c \"{} {};\"'.format(curl_path, "-X POST \"{}/api/detection_engine/rules/_import?overwrite=true\" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form 'file=@{}'".format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file))
-        logger.info('Command: {}'.format(command))
+        logger.debug('Command: {}'.format(command))
         logger.info('Windows powershell command shall be executed...')
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         result_out = json.loads(result.stdout.decode('utf-8'))
@@ -233,7 +239,7 @@ def install_rules(script_dir, credentials, rule_file, logger):
     # if linux machine
     else:
         command = """curl -X POST "{}/api/detection_engine/rules/_import?overwrite=true" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form "file=@{}" """.format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file)
-        logger.info('Command: '.format(command))
+        logger.debug('Command: '.format(command))
         logger.info('Linux shell shall be executed...')
         process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
         proc_stdout = process.communicate()[0].strip().decode('utf-8')
@@ -243,6 +249,9 @@ def install_rules(script_dir, credentials, rule_file, logger):
     logger.info('Import Successful: {}...'.format(result_out.get('success')))
     logger.info('Count Successfully Imported Rules: {}...'.format(result_out.get('success_count')))
     logger.info('Import Errors: {}...'.format(result_out.get('errors')))
+    logger.info('Response Message: {}...'.format(result_out.get('message')))
+    logger.info('Response status code: {}...'.format(result_out.get('status_code')))
+    handle_response_errors(result_out.get('status_code'), result_out.get('message'), logger)
     return query
 
 

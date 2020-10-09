@@ -148,6 +148,7 @@ def get_all_rule_files(rule_path):
 		ret.append(rule_path)
 	logger.info('Printing {} rules identified: '.format(len(ret)))
 	pprint(ret)
+	logger.info('get_all_rule_files() finished successfully...')
 	return ret
 
 
@@ -161,7 +162,9 @@ def main():
 	try:
 		initialize_g_vars()
 		empty_output_file(output=args.output)
-		for rule in get_all_rule_files(args.rule):
+		out_file_name = ''
+		for idx, rule in enumerate(get_all_rule_files(args.rule)):
+			logger.debug('rule iteration {}...'.format(idx))
 			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule)
 			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))

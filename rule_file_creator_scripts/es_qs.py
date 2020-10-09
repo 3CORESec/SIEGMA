@@ -246,7 +246,7 @@ def install_rules(script_dir, credentials, rule_file, logger):
     return query
 
 
-def create_rule(config, credentials, query, yj_rule, attack, output, script_dir, logger):
+def create_rule(config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_es_qs_rule()...')
     rule_file = None
     logger.debug(config)

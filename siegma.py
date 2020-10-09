@@ -112,12 +112,12 @@ def load_yaml_rule_into_json(yj_rule):
 	return yj_rule
 
 
-def create_rule_file_for_siem(sigma_query_format, config, credentials, query, yj_rule, output):
+def create_rule_file_for_siem(sigma_query_format, config, credentials, query, yj_rule, output, testing=False):
 	rule_file = None
 	config_copy = copy.deepcopy(config)
 	yj_rule = load_yaml_rule_into_json(yj_rule)
 	if sigma_query_format in ['es-qs']:
-		rule_file = es_qs.create_rule(config_copy, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger)
+		rule_file = es_qs.create_rule(config_copy, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
 	return rule_file
 
 
@@ -163,7 +163,7 @@ def main():
 		empty_output_file(output=args.output)
 		for rule in get_all_rule_files(args.rule):
 			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule)
-			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output)
+			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
 		install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
 	except Exception as e:

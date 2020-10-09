@@ -267,7 +267,7 @@ def create_rule(config, credentials, query, yj_rule, attack, output, script_dir,
     # risk score set
     config['risk_score'] = get_risk_score(yj_rule.get('level'))
     # tags set
-    config['tags'] = get_tags(yj_rule.get('logsource').get('service') if yj_rule.get('logsource') and yj_rule.get('logsource').get('service') else 'None')
+    config['tags'] = yj_rule.get('siemtags') if yj_rule and 'siemtags' in yj_rule and type(yj_rule.get('siemtags')) == list else []
     # MITRE settings
     if yj_rule.get('tags'): config['threat'] = get_mitre_ttps(attack, yj_rule.get('tags'))
     # rule ID set

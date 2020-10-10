@@ -28,13 +28,13 @@ This folder holds the configuration file for a specific platform. An explanation
 | language                   | kuery                 | Hardcoded                | Preset field and value. Don't change                                  |
 | output_index               | .siem-signals-default | Hardcoded                | Default index used by Elastic SIEM                                    |
 | references                 | No default value      | Sigma: references        | References and documentation related to the detection                 |
-| false_positives            | No default value      | Sigma: falsepositives    | Situation under which a false positive can trigger the detection      |
+| false_positives            | No default value      | Sigma: falsepositives    | Event     under which a false positive can trigger the detection      |
 | risk_score                 | No default value      | Sigma: severity          | low=25, medium=50, high=75, critical=100                              |
 | name                       | No default value      | Sigma: name              | Rule name                                                             |
 | description                | No default value      | Sigma: description       | Rule description                                                      |
 | query                      | No default value      | Hardcoded                | Comes from the result of running sigmac                               |
 | severity                   | No default value      | Sigma: severity          | Rule severity                                                         |
-| tags                       | No default value      | Sigma: logsource.service | Tags to aid in rule identification                                    |
+| tags                       | No default value      | Sigma: siemtags          | Tags to aid in rule identification                                    |
 | to                         | now                   | Hardcoded                | Preset field and value. Don't change                                  |
 | type                       | query                 | Hardcoded                | Preset field and value. Don't change                                  |
 | threat                     | No default value      | Sigma: tags              | ATT&CK mapping                                                        |

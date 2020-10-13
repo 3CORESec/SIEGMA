@@ -52,14 +52,16 @@ def is_technique(attack, item):
         print(match_list)
         is_technique_boolean = True
         technique = get_technique_from_mitre(attack, item.replace('attack.', ''))
+        # if technique: is_technique_boolean = True
     return is_technique_boolean, technique
 
 
 def get_technique_from_mitre(attack, technique_id):
+    found = False
     print('Starting get_technique_from_mitre()...')
     ret = {
-        'id': '',
-        'name': '',
+        'id': technique_id,
+        'name': technique_id,
         'reference': ''
     }
     for technique in attack.enterprise.techniques:
@@ -70,6 +72,10 @@ def get_technique_from_mitre(attack, technique_id):
             ret['id'] = technique.id
             ret['name'] = technique.name
             ret['reference'] = technique.wiki
+            found = True
+            break
+    # in case of an incorrect tecnique ID, it won't be detected so we need to let the parent function know that we failed to find the unknown technique.
+    # if not found: ret = None
     return ret
 
 

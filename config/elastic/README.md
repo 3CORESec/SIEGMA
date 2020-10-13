@@ -4,11 +4,11 @@ This folder holds the configuration file for a specific platform. An explanation
 
 **Fields that are worth looking into to adapt to your particular use case:**
 
-| Elastic SIEM Config Field | Description                                                       | Example                                              | 
-|---------------------------|-------------------------------------------------------------------|-------------------------------------------------------
-| from                      | No need to change if you're using `timeframe` in your Sigma rules | now-15m                                              |
-| timeline_id               | Not included in the configuration but can be added               | "timeline_id":"e17d2870-6bb5-11ea-9871-d10df4e7cd14"  |
-| timeline_title            | Not included in the configuration but can be added               | "timeline_title":"AWS CloudTrail"                     |
+| Elastic SIEM Config Field | Description                                                       | Example                                               | 
+|---------------------------|-------------------------------------------------------------------|-------------------------------------------------------|
+| from                      | No need to change if you're using `timeframe` in your Sigma rules | now-15m                                               |
+| timeline_id               | Not included in the configuration but can be added                | "timeline_id":"e17d2870-6bb5-11ea-9871-d10df4e7cd14"  |
+| timeline_title            | Not included in the configuration but can be added                | "timeline_title":"AWS CloudTrail"                     |
 
 
 ## Elastic SIEM Configuration & Data Dictionary 

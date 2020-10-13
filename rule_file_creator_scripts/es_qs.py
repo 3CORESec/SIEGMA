@@ -274,7 +274,7 @@ def create_rule(config, credentials, query, yj_rule, attack, output, script_dir,
     # severity set
     config['severity'] = yj_rule.get('level')
     # risk score set
-    config['risk_score'] = get_risk_score(yj_rule.get('level'))
+    config['risk_score'] = get_risk_score(yj_rule.get('level')) if 'score' not in yj_rule else yj_rule.get('score')
     # tags set
     config['tags'] = yj_rule.get('siemtags') if yj_rule and 'siemtags' in yj_rule and type(yj_rule.get('siemtags')) == list else []
     # MITRE settings

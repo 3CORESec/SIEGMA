@@ -81,8 +81,7 @@ def get_sigma_path_from_config(config):
 
 def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_query_format, rule):
 	# if windows, execute these commands
-	result = None
-	query = None
+	result = query = command = None
 	# if windows machine
 	if os.name == 'nt':
 		logger.info('Windows powershell command shall be executed...')
@@ -97,7 +96,10 @@ def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_que
 	# if linux machine
 	else:
 		logger.info('Linux shell shall be executed...')
-		process = subprocess.Popen(get_slash_set_path("ls; . {1}/bin/activate; ls; python {0}/tools/sigmac -c {2} -t {3} {4};".format(sigma, sigma_venv, sigma_config, sigma_query_format, rule)), stdout=subprocess.PIPE, shell=True)
+		command = ". {1}/bin/activate; python {0}/tools/sigmac -c {2} -t {3} {4};".format(sigma, sigma_venv, sigma_config, sigma_query_format, rule)
+		logger.debug('Command:')
+		logger.debug(command)
+		process = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
 		proc_stdout = process.communicate()[0].strip().decode('utf-8')
 		print(proc_stdout)
 		query = proc_stdout.splitlines()[-1]

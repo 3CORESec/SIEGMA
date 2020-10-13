@@ -239,7 +239,7 @@ def install_rules(script_dir, credentials, rule_file, logger):
     # if linux machine
     else:
         command = """curl -X POST "{}/api/detection_engine/rules/_import?overwrite=true" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form "file=@{}" """.format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file)
-        logger.debug('Command: '.format(command))
+        logger.debug('Command: {}'.format(command))
         logger.info('Linux shell shall be executed...')
         process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
         proc_stdout = process.communicate()[0].strip().decode('utf-8')

@@ -176,7 +176,7 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params):
 	except Exception as e:
 		logger.error('Exception {} occurred in get_sigma_extra_parameters()...'.format(e))
 	logger.info('Final sigma_extra_params: {}'.format(sigma_extra_params))
-	return sigma_extra_parameters
+	return sigma_extra_params
 
 
 def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name):

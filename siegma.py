@@ -35,7 +35,7 @@ def setup_args():
 	parser.add_argument('-sv', '--sigma_venv', metavar='<sigma_python_venv>', type=str, default='', help='Sigma repository Python virtual environment path. Eg: /path/to/sigma/.venv3.')
 	parser.add_argument('-o', '--output', metavar='<output_file>', type=str, default='.output', help='Output file path. Eg: /path/to/output_file.')
 	parser.add_argument('-t', '--testing', dest='testing', action='store_true', help='Switch for testing. Default "False". If testing, output file will be created but the rule file will not be installed on SIEM. Eg: -t or --testing.')
-	parser.add_argument('-sbo', '--sigma_backend_options', dest='sigma_backend_options', action='store_true', help='Switch for enabling backend options feature of sigma. Default "False". Eg: -sbo or --sigma_backend_options.')
+	parser.add_argument('-sep', '--sigma_extra_parameters', dest='sigma_extra_parameters', action='store_true', help='Switch for enabling backend options feature of sigma. Default "False". Eg: -sbo or --sigma_extra_parameters.')
 	parser.add_argument('-v', '--verbosity', metavar='<verbosity_level>', type=str, default='DEBUG', help='Execution verbosity level. Eg: SUCCESS|WARN|INFO|DEBUG.')
 	logger.info('Arguments parsed successfully...')
 	return parser.parse_args()
@@ -81,7 +81,7 @@ def get_sigma_path_from_config(config):
 	return config.get('path_to_sigma_folder')
 
 
-def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_query_format, rule):
+def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters):
 	# if windows, execute these commands
 	result = query = command = None
 	# if windows machine
@@ -156,6 +156,20 @@ def get_all_rule_files(rule_path):
 	return ret
 
 
+def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params):
+	sigma_extra_params = ''
+	try:
+		if type(sigma_params) == dict and len(sigma_params) > 0:
+			for key, value in sigma_params.items():
+				if type(value) == list:
+					logger.debug('list type params found for key {}...'.format(key))
+					
+		else: logger.warn('sigma_params are empty in config...')
+	except Exception as e:
+		logger.error('Exception {} occurred in get_sigma_extra_parameters()...'.format(e))
+	return sigma_extra_parameters
+
+
 def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name):
 	if sigma_query_format in ['es-qs']:
 		if es_qs.valid_credentials(credentials, logger):
@@ -169,7 +183,7 @@ def main():
 		out_file_name = ''
 		for idx, rule in enumerate(get_all_rule_files(args.rule)):
 			logger.debug('rule iteration {}...'.format(idx))
-			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule)
+			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config('sigma_params')))
 			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
 		if not args.testing:

@@ -87,9 +87,9 @@ def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_que
 	# if windows machine
 	if os.name == 'nt':
 		logger.info('Windows powershell command shall be executed...')
-		command = 'powershell -nop -c ". {1}\\Scripts\\activate.ps1; python {0}\\tools\\sigmac -c {2} -t {3} {4};"'.format(sigma, sigma_venv, sigma_config, sigma_query_format, rule)
+		command = 'powershell -nop -c ". {1}\\Scripts\\activate.ps1; python {0}\\tools\\sigmac -c {2} -t {3} {5} {4};"'.format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
 		logger.debug(command)
-		result = subprocess.run('powershell -nop -c ". {1}\\Scripts\\activate.ps1; python {0}\\tools\\sigmac -c {2} -t {3} {4};"'.format(sigma, sigma_venv, sigma_config, sigma_query_format, rule), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+		result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 		result_out = result.stdout.decode('utf-8')
 		result_error = result.stderr.decode('utf-8')
 		query = result_out.splitlines()[0]
@@ -98,7 +98,7 @@ def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_que
 	# if linux machine
 	else:
 		logger.info('Linux shell shall be executed...')
-		command = ". {1}/bin/activate; python {0}/tools/sigmac -c {2} -t {3} {4};".format(sigma, sigma_venv, sigma_config, sigma_query_format, rule)
+		command = ". {1}/bin/activate; python {0}/tools/sigmac -c {2} -t {3} {5} {4};".format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
 		logger.debug('Command:')
 		logger.debug(command)
 		process = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)

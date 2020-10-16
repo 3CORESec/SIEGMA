@@ -1,7 +1,7 @@
 {
     "sigma_query_format": "es-qs",
     "sigma_params": {
-        "backend-options": [
+        "--backend-options": [
             ""
         ]
     },

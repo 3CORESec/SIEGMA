@@ -69,7 +69,7 @@ def initialize_g_vars():
 	args.rule = args.rule.rstrip('/')
 	args.sigma_venv = args.sigma_venv.rstrip('\\')
 	args.sigma_venv = args.sigma_venv.rstrip('/')
-	if args.verbosity is not None and not args.verbosity: logger.setLevel(verbosity)
+	if args.verbosity is not None and not args.verbosity: logger.setLevel(args.verbosity)
 	logger.info('initialize_g_vars() finished successfully...')
 
 
@@ -164,10 +164,10 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params):
 				if type(value) == list:
 					logger.debug('list type params found for key {}...'.format(key))
 					for item in value:
-						sigma_extra_params += '--{} {}  '.format(key, value)
+						sigma_extra_params += '{} {}  '.format(key, value)
 				elif type(value) == str:
 					logger.debug('str type params found for key {}...'.format(key))
-					sigma_extra_params += '--{} {}  '.format(key, value)
+					sigma_extra_params += '{} {}  '.format(key, value)
 				else: logger.error('Unhandled type params found for key {} and type {}...'.format(key, type(value)))
 		else: logger.warn('sigma_params are empty in config...')
 	except Exception as e:

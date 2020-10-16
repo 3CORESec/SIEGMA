@@ -163,10 +163,16 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params):
 			for key, value in sigma_params.items():
 				if type(value) == list:
 					logger.debug('list type params found for key {}...'.format(key))
-					
+					for item in value:
+						sigma_extra_params += '--{} {}  '.format(key, value)
+				elif type(value) == str:
+					logger.debug('str type params found for key {}...'.format(key))
+					sigma_extra_params += '--{} {}  '.format(key, value)
+				else: logger.error('Unhandled type params found for key {} and type {}...'.format(key, type(value)))
 		else: logger.warn('sigma_params are empty in config...')
 	except Exception as e:
 		logger.error('Exception {} occurred in get_sigma_extra_parameters()...'.format(e))
+	logger.info('Final sigma_extra_params: {}'.format(sigma_extra_params))
 	return sigma_extra_parameters
 
 

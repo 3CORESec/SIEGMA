@@ -167,7 +167,7 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params):
 				if type(value) == list:
 					logger.debug('list type params found for key {}...'.format(key))
 					for item in value:
-						sigma_extra_params += '{} {}  '.format(key, value)
+						sigma_extra_params += '{} {}  '.format(key, item)
 				elif type(value) == str:
 					logger.debug('str type params found for key {}...'.format(key))
 					sigma_extra_params += '{} {}  '.format(key, value)

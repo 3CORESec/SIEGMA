@@ -84,28 +84,31 @@ def get_sigma_path_from_config(config):
 def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters):
 	# if windows, execute these commands
 	result = query = command = None
-	# if windows machine
-	if os.name == 'nt':
-		logger.info('Windows powershell command shall be executed...')
-		command = 'powershell -nop -c ". {1}\\Scripts\\activate.ps1; python {0}\\tools\\sigmac -c {2} -t {3} {5} {4};"'.format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
-		logger.debug(command)
-		result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-		result_out = result.stdout.decode('utf-8')
-		result_error = result.stderr.decode('utf-8')
-		query = result_out.splitlines()[0]
-		logger.debug(query)
-		logger.error(result_error)
-	# if linux machine
-	else:
-		logger.info('Linux shell shall be executed...')
-		command = ". {1}/bin/activate; python {0}/tools/sigmac -c {2} -t {3} {5} {4};".format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
-		logger.debug('Command:')
-		logger.debug(command)
-		process = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
-		proc_stdout = process.communicate()[0].strip().decode('utf-8')
-		print(proc_stdout)
-		query = proc_stdout.splitlines()[-1]
-		logger.info(query)
+	try:
+		# if windows machine
+		if os.name == 'nt':
+			logger.info('Windows powershell command shall be executed...')
+			command = 'powershell -nop -c ". {1}\\Scripts\\activate.ps1; python {0}\\tools\\sigmac -c {2} -t {3} {5} {4};"'.format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			logger.debug(command)
+			result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+			result_out = result.stdout.decode('utf-8')
+			result_error = result.stderr.decode('utf-8')
+			query = result_out.splitlines()[0]
+			logger.debug(query)
+			logger.error(result_error)
+		# if linux machine
+		else:
+			logger.info('Linux shell shall be executed...')
+			command = ". {1}/bin/activate; python {0}/tools/sigmac -c {2} -t {3} {5} {4};".format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			logger.debug('Command:')
+			logger.debug(command)
+			process = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
+			proc_stdout = process.communicate()[0].strip().decode('utf-8')
+			print(proc_stdout)
+			query = proc_stdout.splitlines()[-1]
+			logger.info(query)
+	except Exception as e:
+		logger.error('Exception {} occurred in get_sigma_query_conversion_result()...'.format(e))
 	return query
 
 
@@ -189,7 +192,7 @@ def main():
 		out_file_name = ''
 		for idx, rule in enumerate(get_all_rule_files(args.rule)):
 			logger.debug('rule iteration {}...'.format(idx))
-			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config('sigma_params')))
+			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params')))
 			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
 		if not args.testing:

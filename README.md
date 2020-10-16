@@ -76,6 +76,10 @@ An example where we utilize our [AWS CloudTrail Sigma configuration](https://blo
 
 `python siegma.py -c config/elastic/elastic-siem.json -r rules/cloudtrail_rule.yml -sv /path/to/sigma/virtualenv -s sigma/ -sc sigma/tools/config/ecs-cloudtrail.yml -o rule-output`
 
+Generate an Elastic SIEM output from a rule file and also pass sigma backend options:
+
+`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
+
 ## SIEM automatic import feature
 
 If you'd like to enable the feature where the created artifact is automatically imported into your SIEM, please enter your environment variables in the [config](config/) of your platform. 

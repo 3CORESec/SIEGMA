@@ -5,6 +5,7 @@ import copy
 import yaml
 import argparse
 import subprocess
+import collections
 from pyattck import Attck
 from pprint import pprint
 from rule_file_creator_scripts import es_qs
@@ -34,7 +35,7 @@ def setup_args():
 	parser.add_argument('-sc', '--sigma_config', metavar='<sigma_config_file>', type=str, default='', help='Sigma config file path. Eg: /path/to/sigma/tools/config/ecs-cloudtrail.yml.')
 	parser.add_argument('-sv', '--sigma_venv', metavar='<sigma_python_venv>', type=str, default='', help='Sigma repository Python virtual environment path. Eg: /path/to/sigma/.venv3.')
 	parser.add_argument('-o', '--output', metavar='<output_file>', type=str, default='.output', help='Output file path. Eg: /path/to/output_file.')
-	parser.add_argument('-co', '--config_override', metavar='<config_override>', type=str, default='', help='Values that can be used to override config. Eg: settings.author=none,credentials.kibana_url="www.example.com",sigma_query_format="es-qs".')
+	parser.add_argument('-co', '--config_override', metavar='<config_override>', type=str, default='', help='Values that can be used to override config. Eg: settings.rule_id="some_id",settings.custom_field="custom_value",custom_field="custom_value",settings.author=none,credentials.kibana_url="www.example.com",sigma_query_format="es-qs".')
 	parser.add_argument('-t', '--testing', dest='testing', action='store_true', help='Switch for testing. Default "False". If testing, output file will be created but the rule file will not be installed on SIEM. Eg: -t or --testing.')
 	parser.add_argument('-sep', '--sigma_extra_parameters', dest='sigma_extra_parameters', action='store_true', help='Switch for enabling backend options feature of sigma. If this switch is passed here, sigma_params values from config file will be read and used by the script. Default "False". Eg: -sbo or --sigma_extra_parameters.')
 	parser.add_argument('-v', '--verbosity', metavar='<verbosity_level>', type=str, default='DEBUG', help='Execution verbosity level. Eg: SUCCESS|WARN|INFO|DEBUG.')
@@ -186,6 +187,67 @@ def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name):
 			es_qs.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, logger)
 
 
+def get_dict_from_dot_separated_string(ret, len_dlist, dlist, value):
+	try:
+		logger.debug(f'len(dlist) - len_dlist: {len(dlist) - len_dlist}')
+		logger.debug('start ret:')
+		pprint(ret)
+		if len_dlist == 1:
+			ret[dlist[len(dlist) - len_dlist]] = value
+		elif len_dlist > 0:
+			ret[dlist[len(dlist) - len_dlist]] = {}
+			logger.debug('elif ret:')
+			pprint(ret)
+			ret[dlist[len(dlist) - len_dlist]] = get_dict_from_dot_separated_string(ret[dlist[len(dlist) - len_dlist]], len_dlist - 1, dlist, value)
+		else: pass
+	except Exception as e:
+		logger.error(f'Exception {e} occurred in get_dict_from_dot_separated_string()...')
+	logger.debug('end ret:')
+	pprint(ret)
+	return ret
+
+
+def parse_config_override(config_override):
+	ret = {}
+	for pairs in config_override.split(','):
+		p_split = pairs.split('=')
+		logger.debug('p_split: {}'.format(p_split))
+		k = p_split[0]
+		v = p_split[1]
+		k_split = k.split('.')
+		ret = update_dict(ret, get_dict_from_dot_separated_string({}, len(k_split), k_split, v))
+		logger.debug('String to dict:')
+		pprint(ret)
+	logger.info('String to dict:')
+	pprint(ret)
+	return ret
+
+
+def update_dict(orig_dict, new_dict):
+	for key, val in new_dict.items():
+		if isinstance(val, collections.Mapping):
+			tmp = update_dict(orig_dict.get(key, { }), val)
+			orig_dict[key] = tmp
+		elif isinstance(val, list):
+			orig_dict[key] = (orig_dict.get(key, []) + val)
+		else:
+			orig_dict[key] = new_dict[key]
+	return orig_dict
+
+
+def update_config(config_override, config):
+	ret = config
+	try:
+		if config_override == "": return ret
+		dict_config_override = parse_config_override(config_override)
+		ret = update_dict(ret, dict_config_override)
+		logger.info('Updated config:')
+		pprint(ret)
+	except Exception as e:
+		logger.error('Exception {} occurred in update_config()...'.format(e))
+	return ret
+
+
 def main():
 	try:
 		initialize_g_vars()
@@ -194,6 +256,9 @@ def main():
 		for idx, rule in enumerate(get_all_rule_files(args.rule)):
 			logger.debug('rule iteration {}...'.format(idx))
 			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params')))
+			if args.config_override != "":
+				# if config override switch has values then update config
+				args.config = update_config(args.config_override, args.config)
 			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
 		if not args.testing:

@@ -80,7 +80,7 @@ Generate an Elastic SIEM output from a rule file and also pass sigma backend opt
 
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
 
-Generate an Elastic SIEM output from a rule file and also override elastic-siem.json config:
+Generate an Elastic SIEM output from a rule file and also override elastic-siem.json config from commandline:
 
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.author=none,credentials.kibana_url="www.example.com",sigma_query_format="es-qs",credentials.kibana_username="bfd" -o output-file`
 

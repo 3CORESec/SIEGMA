@@ -9,6 +9,7 @@ This folder holds the configuration file for a specific platform. An explanation
 | from                      | No need to change if you're using `timeframe` in your Sigma rules | now-15m                                               |
 | timeline_id               | Not included in the configuration but can be added                | "timeline_id":"e17d2870-6bb5-11ea-9871-d10df4e7cd14"  |
 | timeline_title            | Not included in the configuration but can be added                | "timeline_title":"AWS CloudTrail"                     |
+| threshold                 | Subkeys "field" and "value" within this parameter can be used to create aggregate/frequency based rules in Kibana. Same fields in the rule.yml file shall take precendence over the values defined in siegma config | Example: threshold.field: "eventName". threshold.value: 5 |
 | sigma_params              | Used in conjunction with switch --sigma_extra_parameters. Dictionary under which any of the parameters supported by Sigma can be added. | Example: {"sigma_params": {"--backend-option": ["key=value", "case_insensitive_whitelist=*"]}} |
 
 
@@ -38,6 +39,8 @@ This folder holds the configuration file for a specific platform. An explanation
 | severity                   | No default value      | Sigma: severity          | Rule severity                                                                                                                         |
 | tags                       | No default value      | Sigma: siemtags          | Tags to aid in rule identification                                                                                                    |
 | to                         | now                   | Hardcoded                | Preset field and value. Don't change                                                                                                  |
+| threshold.field            | None                  | Sigma: threshold.field   | Used for aggregate based rules on Kibana. 'threshold' key can be skipped entirely. Value must be a "string" that can be mapped into ECS format based on the sigma config file 'fieldmappings' passed to SIEGMA. Same fields in the rule.yml file shall take precendence over the values defined in siegma config |
+| threshold.value            | No default value.     | Sigma: threshold.value   | Used for aggregate based rules on Kibana to depict count. If events greater than equal to threshold.value are observed, rule will trigger. 'threshold' key can be skipped entirely. Value preferrably should be an "Integer". Same fields in the rule.yml file shall take precendence over the values defined in siegma config |
 | type                       | query                 | Hardcoded                | Preset field and value. Don't change                                                                                                  |
 | threat                     | No default value      | Sigma: tags              | ATT&CK mapping                                                                                                                        |
 | throttle                   | no_actions            | Hardcoded                | Preset field and value. Don't change                                                                                                  |

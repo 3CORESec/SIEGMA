@@ -121,12 +121,13 @@ def load_yaml_rule_into_json(yj_rule):
 	return yj_rule
 
 
-def create_rule_file_for_siem(sigma_query_format, config, credentials, query, yj_rule, output, testing=False):
+def create_rule_file_for_siem(sigma_query_format, sigma_config, config, credentials, query, yj_rule, output, testing=False):
 	rule_file = None
 	config_copy = copy.deepcopy(config)
 	yj_rule = load_yaml_rule_into_json(yj_rule)
+	sigma_config = load_yaml_rule_into_json(sigma_config)
 	if sigma_query_format in ['es-qs']:
-		rule_file = es_qs.create_rule(config_copy, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
+		rule_file = es_qs.create_rule(config_copy, sigma_config, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
 	return rule_file
 
 
@@ -259,7 +260,7 @@ def main():
 			if args.config_override != "":
 				# if config override switch has values then update config
 				args.config = update_config(args.config_override, args.config)
-			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
+			out_file_name = create_rule_file_for_siem(args.config.get('sigma_query_format'), args.sigma_config, args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
 		if not args.testing:
 			install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)

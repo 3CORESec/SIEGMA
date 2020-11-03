@@ -261,7 +261,35 @@ def install_rules(script_dir, credentials, rule_file, logger):
     return query
 
 
-def create_rule(config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
+def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
+    temp = {}
+    update_required = False
+    try:
+        if (not update_required) and yj_rule_t and yj_rule_t.get('field') and (not yj_rule_t.get('field') == '') and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
+            # if threshold is not defined in siegma config
+            temp = yj_rule_t
+            update_required = True
+            logger.debug('rule threshold set...')
+        elif (not update_required) and config_t and config_t.get('field') and (not config_t.get('field') == '') and config_t.get('value') and type(config_t.get('value')) == int: 
+            # if threshold is not defined in siegma config
+            temp = config_t
+            update_required = True
+            logger.debug('config threshold set...')
+        else: pass
+        if update_required:
+            # change field name to ECS format and update rate threshold in config
+            config['threshold'] = {
+                'field' : sigma_config.get('fieldmappings').get(temp.get('field')),
+                'value': temp.get('value')
+            }
+            config['type'] = 'threshold'
+        else: del config['threshold']
+    except Exception as e:
+        logger.error(f'Exception {e} occurred in rate_based_rule_settings()...')
+    return config
+
+
+def create_rule(config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_es_qs_rule()...')
     rule_file = None
     logger.debug(config)
@@ -289,6 +317,8 @@ def create_rule(config, credentials, query, yj_rule, attack, output, script_dir,
     config['rule_id'] = config['id'] = yj_rule.get('id')
     # time set
     if 'timeframe' in yj_rule.get('detection'): config['from'] = 'now-' + yj_rule.get('detection').get('timeframe')
+    # rate_based_rule
+    config = rate_based_rule_settings(sigma_config, config, config.get('threshold'), yj_rule.get('threshold'), logger)
     #############
     logger.info('Final config:')
     pprint(config)

@@ -92,6 +92,9 @@ Want to know more how it all comes together or want to contribute support for a 
 
 - Additional platform/SIEM support
   - Splunk is currently in development
+- ~~Override siegma config from the commandline~~
+- ~~Override sigma backend options from the commandline~~
+- ~~Functionality to create aggregate rules in Elastic/Kibana using `es-qs` as backend~~
 
 # Feedback
 

@@ -30,6 +30,10 @@
         "to":"now",
         "type":"query",
         "threat":[],
-        "throttle":"no_actions"
+        "throttle":"no_actions",
+        "threshold": {
+            "field": null,
+            "value": null
+        }
     }
 }

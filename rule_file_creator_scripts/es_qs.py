@@ -265,27 +265,42 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
     temp = {}
     update_required = False
     try:
-        if (not update_required) and yj_rule_t and yj_rule_t.get('field') and (not yj_rule_t.get('field') == '') and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
+        logger.info('if else starting...')
+        logger.debug(f'yj_rule_t: {yj_rule_t}')
+        # if (not update_required) and yj_rule_t and yj_rule_t.get('field') and (not yj_rule_t.get('field') == '') and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
+        # if (not update_required) and yj_rule_t and yj_rule_t.get('field') and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
+        if (not update_required) and yj_rule_t and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
             # if threshold is not defined in siegma config
             temp = yj_rule_t
             update_required = True
+            logger.info('rule threshold set...')
             logger.debug('rule threshold set...')
-        elif (not update_required) and config_t and config_t.get('field') and (not config_t.get('field') == '') and config_t.get('value') and type(config_t.get('value')) == int: 
+        # elif (not update_required) and config_t and config_t.get('field') and (not config_t.get('field') == '') and config_t.get('value') and type(config_t.get('value')) == int: 
+        # elif (not update_required) and config_t and config_t.get('field') and config_t.get('value') and type(config_t.get('value')) == int: 
+        elif (not update_required) and config_t and config_t.get('value') and type(config_t.get('value')) == int: 
             # if threshold is not defined in siegma config
             temp = config_t
             update_required = True
+            logger.info('config threshold set...')
             logger.debug('config threshold set...')
-        else: pass
+        else: logger.debug('temp is empty...')
         if update_required:
             # change field name to ECS format and update rate threshold in config
+            ecs_field = ''
+            # handle empty field gracefully
+            # t = temp.get('field')
+            # logger.debug(f'temp.field: {t}')
+            if temp.get('field') and temp.get('field') != '': ecs_field = sigma_config.get('fieldmappings').get(temp.get('field'))
             config['threshold'] = {
-                'field' : sigma_config.get('fieldmappings').get(temp.get('field')),
+                'field' : ecs_field,
                 'value': temp.get('value')
             }
             config['type'] = 'threshold'
-        else: del config['threshold']
+        else: 
+            if config.get('threshold'): del config['threshold']
     except Exception as e:
         logger.error(f'Exception {e} occurred in rate_based_rule_settings()...')
+    logger.info('rate_based_rule_settings() finished successfully...')
     return config
 
 

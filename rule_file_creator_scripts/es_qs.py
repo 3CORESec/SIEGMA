@@ -262,28 +262,32 @@ def install_rules(script_dir, credentials, rule_file, logger):
 
 
 def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
+    # directly make changes to config variable and then return it at the end
     temp = {}
     update_required = False
     try:
-        logger.info('if else starting...')
+        logger.debug('if else starting...')
         logger.debug(f'yj_rule_t: {yj_rule_t}')
-        # if (not update_required) and yj_rule_t and yj_rule_t.get('field') and (not yj_rule_t.get('field') == '') and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
-        # if (not update_required) and yj_rule_t and yj_rule_t.get('field') and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
-        if (not update_required) and yj_rule_t and yj_rule_t.get('value') and type(yj_rule_t.get('value')) == int: 
-            # if threshold is not defined in siegma config
-            temp = yj_rule_t
-            update_required = True
-            logger.info('rule threshold set...')
-            logger.debug('rule threshold set...')
-        # elif (not update_required) and config_t and config_t.get('field') and (not config_t.get('field') == '') and config_t.get('value') and type(config_t.get('value')) == int: 
-        # elif (not update_required) and config_t and config_t.get('field') and config_t.get('value') and type(config_t.get('value')) == int: 
-        elif (not update_required) and config_t and config_t.get('value') and type(config_t.get('value')) == int: 
-            # if threshold is not defined in siegma config
-            temp = config_t
-            update_required = True
-            logger.info('config threshold set...')
-            logger.debug('config threshold set...')
-        else: logger.debug('temp is empty...')
+        logger.debug(f'config_t: {config_t}')
+        # if yj_rule has threshold fields
+        # if (not update_required) and yj_rule_t and yj_rule_t.get('field') is not None and yj_rule_t.get('value') is not None and type(yj_rule_t.get('value')) == int:
+        for i in range(1): 
+            if (not update_required) and yj_rule_t:
+                # if in the rule, field or value under threshold are empty or null, then rule is not rate based.
+                if yj_rule_t.get('field') is None or yj_rule_t.get('value') is None: break
+                if yj_rule_t.get('field') is not None and yj_rule_t.get('value') is not None and type(yj_rule_t.get('value')) == int: 
+                # if threshold is not defined in siegma config
+                    temp = yj_rule_t
+                    update_required = True
+                    logger.debug('rule threshold set...')
+            # elif (not update_required) and config_t and config_t.get('field') and (not config_t.get('field') == '') and config_t.get('value') and type(config_t.get('value')) == int: 
+            elif (not update_required) and config_t and config_t.get('field') is not None and config_t.get('value') is not None and type(config_t.get('value')) == int: 
+            # elif (not update_required) and config_t and config_t.get('value') and type(config_t.get('value')) == int: 
+                # if threshold is not defined in siegma config
+                temp = config_t
+                update_required = True
+                logger.debug('config threshold set...')
+            else: logger.debug('temp is empty...')
         if update_required:
             # change field name to ECS format and update rate threshold in config
             ecs_field = ''
@@ -297,6 +301,7 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
             }
             config['type'] = 'threshold'
         else: 
+            # if deafult config has threshold in it, then delete threshold key entirely if no changes were made
             if config.get('threshold'): del config['threshold']
     except Exception as e:
         logger.error(f'Exception {e} occurred in rate_based_rule_settings()...')

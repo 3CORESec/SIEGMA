@@ -27,7 +27,6 @@ We'll run the software and install dependencies, for both this project as well a
 git clone https://github.com/Neo23x0/sigma
 cd sigma
 python3 -m virtualenv .venv3
-# activate virtual environment
 . .venv3/bin/activate
 cd tools
 pip install -r requirements.txt
@@ -36,13 +35,10 @@ pip install -r requirements.txt
 * Setup SIEGMA
 
 ```
-# Download Sigma2SIEM repo
-# cd into the repo
-# create virtual environment
+git clone https://github.com/3CORESec/SIEGMA
+cd SIEGMA
 python3 -m virtualenv .venv3
-# activate virtual environment
 . .venv3/bin/activate
-# install required libraries
 pip install -r requirements.txt
 ```
 

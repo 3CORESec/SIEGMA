@@ -2,15 +2,14 @@
 
 This folder holds the configuration file for a specific platform. An explanation of the fields is available below. 
 
-**Fields that are worth looking into to adapt to your particular use case:**
+## Fields that are worth looking into to adapt to your particular use case
 
 | Elastic SIEM Config Field | Description                                                       | Example                                               | 
 |---------------------------|-------------------------------------------------------------------|-------------------------------------------------------|
 | from                      | No need to change if you're using `timeframe` in your Sigma rules | now-15m                                               |
 | timeline_id               | Not included in the configuration but can be added                | "timeline_id":"e17d2870-6bb5-11ea-9871-d10df4e7cd14"  |
 | timeline_title            | Not included in the configuration but can be added                | "timeline_title":"AWS CloudTrail"                     |
-| threshold                 | Subkeys "field" and "value" within this parameter can be used to create aggregate/frequency based rules in Kibana. Same fields in the rule.yml file shall take precendence over the values defined in siegma config | Example: threshold.field: "eventName". threshold.value: 5 |
-| sigma_params              | Used in conjunction with switch --sigma_extra_parameters. Dictionary under which any of the parameters supported by Sigma can be added. | Example: {"sigma_params": {"--backend-option": ["key=value", "case_insensitive_whitelist=*"]}} |
+| sigma_params              | Used in conjunction with switch --sigma_extra_parameters. Dictionary under which any of the parameters supported by Sigma can be added. | {"sigma_params": {"--backend-option": ["key=value", "case_insensitive_whitelist=*"]}} |
 
 
 ## Elastic SIEM Configuration & Data Dictionary 

@@ -37,7 +37,7 @@ def setup_args():
 	parser.add_argument('-o', '--output', metavar='<output_file>', type=str, default='.output', help='Output file path. Eg: /path/to/output_file.')
 	parser.add_argument('-co', '--config_override', metavar='<config_override>', type=str, default='', help='Values that can be used to override config. Eg: settings.rule_id="some_id",settings.custom_field="custom_value",custom_field="custom_value",settings.author=none,credentials.kibana_url="www.example.com",sigma_query_format="es-qs".')
 	parser.add_argument('-t', '--testing', dest='testing', action='store_true', help='Switch for testing. Default "False". If testing, output file will be created but the rule file will not be installed on SIEM. Eg: -t or --testing.')
-	parser.add_argument('-sep', '--sigma_extra_parameters', dest='sigma_extra_parameters', action='store_true', help='Switch for enabling backend options feature of sigma. If this switch is passed here, sigma_params values from config file will be read and used by the script. Default "False". Eg: -sbo or --sigma_extra_parameters.')
+	parser.add_argument('-sep', '--sigma_extra_parameters', dest='sigma_extra_parameters', action='store_true', help='Switch for enabling backend options feature of sigma. If this switch is passed here, sigma_params values from config file will be read and used by the script. Default "False". Eg: -sep or --sigma_extra_parameters.')
 	parser.add_argument('-v', '--verbosity', metavar='<verbosity_level>', type=str, default='DEBUG', help='Execution verbosity level. Eg: SUCCESS|WARN|INFO|DEBUG.')
 	logger.info('Arguments parsed successfully...')
 	return parser.parse_args()

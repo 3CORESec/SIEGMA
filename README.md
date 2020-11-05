@@ -4,7 +4,7 @@ This project aims to automate the creation of SIEM rule consumables by leveragin
 
 <p align="center"><img align="center" src="https://i.imgur.com/laf6vv6.png"></p>
 
-It is also our objective to take a community approach to SIEM schemas, maintaing easy to read data dictionaries while making it trivial to add custom fields based on specific use cases *(i.e quickly add a field to your SIEM configuration file)*. 
+It is also our objective to take a community approach to SIEM schemas, maintaing easy to read data dictionaries while making it trivial to add custom fields based on specific use cases. 
 
 For platforms that support it, SIΣGMA also enables automatic upload of the SIEM consumable. Check the [Automatic Import](https://github.com/3CORESec/SIEGMA#siem-automatic-import-feature) section for more information.
 
@@ -48,7 +48,7 @@ pip install -r requirements.txt
 
 Visit your SIEM [config](config/) folder to learn more about this.
 
-## Usage
+# Usage
  
 Invoke the script by providing it a Sigma rule or Sigma rule folder as well as the desired SIEM platform. 
 
@@ -56,15 +56,15 @@ Activate the virtual environment:
  
 `. .venv3/bin/activate`
    
-See the available options:
+It is recommended to consult the `siegma.py` help, especially for advanced usage instructions:
  
 `python siegma.py -h`
 
-Generate an Elastic SIEM output from a single Sigma rule file:
+## Generate an Elastic SIEM output from a single Sigma rule file:
  
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
  
-Generate an Elastic SIEM output from a folder with several Sigma rule files:
+## Generate an Elastic SIEM output from a folder with several Sigma rule files:
 
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/ -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
 
@@ -72,17 +72,23 @@ An example where we utilize our [AWS CloudTrail Sigma configuration](https://blo
 
 `python siegma.py -c config/elastic/elastic-siem.json -r rules/cloudtrail_rule.yml -sv /path/to/sigma/virtualenv -s sigma/ -sc sigma/tools/config/ecs-cloudtrail.yml -o rule-output`
 
-Generate an Elastic SIEM output from a rule file and also pass sigma backend options:
+## Generate an Elastic SIEM output from a rule file and also pass Sigma backend options:
+
+In this example we will utilize `-sep` to request SIEGMA to use the advanced Sigma backend options that would be defined in the [Elastic config](config/elastic/)
 
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
 
-Generate an Elastic SIEM output from a rule file and also override elastic-siem.json config from commandline:
+## Generate an Elastic SIEM output from a rule file and also override elastic-siem.json config from commandline:
 
-`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.author=none,credentials.kibana_url="www.example.com",sigma_query_format="es-qs",credentials.kibana_username="bfd" -o output-file`
+In this example we will utilize the [Elastic config](config/elastic/) fields as they are definied *(or supplied from the Sigma rule)* **while** overwriting certain fields through the usage of `-co`. This is particularly useful if converting Sigma rules for which you'd like to apply different SIEM consumable fields. 
 
-## SIEM automatic import feature
+The example below will overwrite the `settings.author`, `credentials.kibana_url` and `credentials.kibana_username`.  
 
-If you'd like to enable the feature where the created artifact is automatically imported into your SIEM, please enter your environment variables in the [config](config/) of your platform. 
+`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.author=none,credentials.kibana_url="www.example.com",credentials.kibana_username="bfd" -o output-file`
+
+# SIEM Automatic Import
+
+If you'd like to enable automatic upload/import of consumables into your SIEM, please enter your environment variables in the [config](config/) of your platform or specify them through `-co` as previously shown. 
 
 # Contributions and Development
 

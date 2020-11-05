@@ -60,11 +60,11 @@ It is recommended to consult the `siegma.py` help, especially for advanced usage
  
 `python siegma.py -h`
 
-## Generate an Elastic SIEM output from a single Sigma rule file:
+## Generate an Elastic SIEM output from a single Sigma rule file
  
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
  
-## Generate an Elastic SIEM output from a folder with several Sigma rule files:
+## Generate an Elastic SIEM output from a folder with several Sigma rule files
 
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/ -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
 
@@ -72,13 +72,13 @@ An example where we utilize our [AWS CloudTrail Sigma configuration](https://blo
 
 `python siegma.py -c config/elastic/elastic-siem.json -r rules/cloudtrail_rule.yml -sv /path/to/sigma/virtualenv -s sigma/ -sc sigma/tools/config/ecs-cloudtrail.yml -o rule-output`
 
-## Generate an Elastic SIEM output from a rule file and also pass Sigma backend options:
+## Generate an Elastic SIEM output from a rule file and also pass Sigma backend options
 
 In this example we will utilize `-sep` to request SIEGMA to use the advanced Sigma backend options that would be defined in the [Elastic config](config/elastic/)
 
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
 
-## Generate an Elastic SIEM output from a rule file and also override elastic-siem.json config from commandline:
+## Generate an Elastic SIEM output from a rule file and also override elastic-siem.json config from commandline
 
 In this example we will utilize the [Elastic config](config/elastic/) fields as they are definied *(or supplied from the Sigma rule)* **while** overwriting certain fields through the usage of `-co`. This is particularly useful if converting Sigma rules for which you'd like to apply different SIEM consumable fields. 
 
@@ -88,7 +88,7 @@ The example below will overwrite the `settings.author`, `credentials.kibana_url`
 
 # SIEM Automatic Import
 
-If you'd like to enable automatic upload/import of consumables into your SIEM, please enter your environment variables in the [config](config/) of your platform or specify them through `-co` as previously shown. 
+If you'd like to enable automatic upload of consumables into your SIEM, please enter your environment variables in the [config](config/) of your platform or specify them through `-co` as previously shown. 
 
 # Contributions and Development
 

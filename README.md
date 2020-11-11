@@ -101,6 +101,7 @@ Want to know more how it all comes together or want to contribute support for a 
 - ~~Enable use of sigma backend options~~
 - ~~Override siegma config from the commandline~~
 - ~~Functionality to create aggregate rules in Elastic/Kibana using `es-qs` as backend~~
+- ~~Enable notes/investigation guide addition to Kibana using es-qs as backend~~
 
 # Feedback
 

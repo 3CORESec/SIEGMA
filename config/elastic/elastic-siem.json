@@ -10,6 +10,7 @@
         "kibana_password": "",
         "kibana_url": ""
     },
+    "notes_folder": "D:\\Current\\work\\3coresec\\repos\\3cs-int-sigma\\notes",
     "settings": {
         "rule_id": "",
         "id": "",
@@ -34,6 +35,7 @@
         "threshold": {
             "field": null,
             "value": null
-        }
+        },
+        "note": ""
     }
 }

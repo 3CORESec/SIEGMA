@@ -27,6 +27,16 @@ def get_slash_set_path(path):
 	return path
 
 
+def get_slashes():
+    ret = '/'
+    if os.name != 'nt': 
+        ret = '\\'
+        print('Non-windows machine...')
+    else:
+        print('Windows machine...')
+    return ret
+
+
 def setup_logger(log_fmt="%(log_color)s%(asctime)s:%(levelname)s:%(message)s", log_file_name=".output.log", level='DEBUG'):
 
 	# a new log file is created each time.

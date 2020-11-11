@@ -4,7 +4,7 @@ import copy
 import json
 import subprocess
 from pprint import pprint
-from helpers.utils import get_slash_set_path
+from helpers.utils import get_slash_set_path, get_slashes
 
 
 def get_author_name(yj_rule):
@@ -309,7 +309,33 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
     return config
 
 
-def create_rule(config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
+def get_notes(notes_folder, config_n, yj_rule_n, logger):
+    ret = ''
+    file_name = ''
+    update_required = False
+    try:
+        if (not update_required) and yj_rule_n and (yj_rule_n != ''):
+            file_name = yj_rule_n
+            update_required = True
+            logger.debug('File name set from rule...')
+        elif (not update_required) and config_n and (config_n != ''):
+            file_name = config_n
+            update_required = True
+            logger.debug('File name set from config...')
+        else: logger.debug('File name not set...')
+        if update_required:
+            # add forward/back slash to end of folder name
+            if notes_folder and len(notes_folder) > 0 and notes_folder[-1] != get_slashes(): notes_folder += get_slashes()
+            # remove forward/back slash from start of file name
+            if file_name and len(file_name) > 0 and file_name[0] == get_slashes(): file_name = file_name[1:]
+            with open(notes_folder + file_name) as input_file:
+                ret = input_file.read()
+                print(ret)
+    except Exception as e:
+        logger.error(f'Exception {e} occurred in get_notes()...')
+    return ret
+
+def create_rule(notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_es_qs_rule()...')
     rule_file = None
     logger.debug(config)
@@ -339,6 +365,8 @@ def create_rule(config, sigma_config, credentials, query, yj_rule, attack, outpu
     if 'timeframe' in yj_rule.get('detection'): config['from'] = 'now-' + yj_rule.get('detection').get('timeframe')
     # rate_based_rule
     config = rate_based_rule_settings(sigma_config, config, config.get('threshold'), yj_rule.get('threshold'), logger)
+    # investigation notes
+    config['note'] = get_notes(notes_folder, config.get('note'), yj_rule.get('note'), logger)
     #############
     logger.info('Final config:')
     pprint(config)

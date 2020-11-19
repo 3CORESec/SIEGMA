@@ -19,11 +19,12 @@ def create_log_file(log_file_name):
 
 def get_slash_set_path(path):
 	slash = '/'
-	if os.name == 'nt':
-		slash = '\\'
-		path = path.replace('/', slash)
-	else:
-		path = path.replace('\\', slash)
+	if path and path != '':
+		if os.name == 'nt':
+			slash = '\\'
+			path = path.replace('/', slash)
+		else:
+			path = path.replace('\\', slash)
 	return path
 
 

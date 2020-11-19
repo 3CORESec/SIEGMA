@@ -312,6 +312,8 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
 def get_notes(notes_folder, config_n, yj_rule_n, logger):
     ret = ''
     file_name = ''
+    config_n = get_slash_set_path(config_n)
+    yj_rule_n = get_slash_set_path(yj_rule_n)
     update_required = False
     try:
         if (not update_required) and yj_rule_n and (yj_rule_n != ''):
@@ -328,7 +330,7 @@ def get_notes(notes_folder, config_n, yj_rule_n, logger):
             if notes_folder and len(notes_folder) > 0 and notes_folder[-1] != get_slashes(): notes_folder += get_slashes()
             # remove forward/back slash from start of file name
             if file_name and len(file_name) > 0 and file_name[0] == get_slashes(): file_name = file_name[1:]
-            with open(notes_folder + file_name) as input_file:
+            with open(get_slash_set_path(notes_folder + file_name)) as input_file:
                 ret = input_file.read()
                 print(ret)
     except Exception as e:

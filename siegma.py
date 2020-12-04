@@ -162,10 +162,25 @@ def get_all_rule_files(rule_path):
 	return ret
 
 
-def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params):
+def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 	sigma_extra_params = ''
+	already_done = False
 	try:
-		if type(sigma_params) == dict and len(sigma_params) > 0:
+		logger.debug('Checking sigma params from rule file...')
+		if (not already_done) and yj_rule is not None and yj_rule != '' and type(yj_rule) == dict and len(yj_rule) > 0 and 'sigma' in yj_rule:
+			logger.debug('sigma params from rule file will be used...')
+			already_done = True
+			for key, value in yj_rule.get('sigma').items():
+				pprint(value)
+				if type(value) == dict:
+					for k2, v2 in value.items():
+						if type(v2) == list:
+							sigma_extra_params += f'--{key} {k2}=' + ','.join(v2)
+						if type(v2) == str:
+							sigma_extra_params += f'--{key} {k2}={v2}'
+		logger.debug('Checking sigma_params from config...')
+		if (not already_done) and type(sigma_params) == dict and len(sigma_params) > 0:
+			logger.debug('sigma_params from config will be used...')
 			for key, value in sigma_params.items():
 				if type(value) == list:
 					logger.debug('list type params found for key {}...'.format(key))
@@ -256,7 +271,7 @@ def main():
 		out_file_name = ''
 		for idx, rule in enumerate(get_all_rule_files(args.rule)):
 			logger.debug('rule iteration {}...'.format(idx))
-			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params')))
+			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params'), load_yaml_rule_into_json(rule)))
 			if args.config_override != "":
 				# if config override switch has values then update config
 				args.config = update_config(args.config_override, args.config)

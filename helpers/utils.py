@@ -18,13 +18,16 @@ def create_log_file(log_file_name):
 
 
 def get_slash_set_path(path):
-	slash = '/'
-	if path and path != '':
-		if os.name == 'nt':
-			slash = '\\'
-			path = path.replace('/', slash)
-		else:
-			path = path.replace('\\', slash)
+	try:
+		slash = '/'
+		if path and path != '':
+			if os.name == 'nt':
+				slash = '\\'
+				path = path.replace('/', slash)
+			else:
+				path = path.replace('\\', slash)
+	except Exception as e:
+		print(f"Exception {e} occurred in get_slash_set_path() for path {path}...")
 	return path
 
 

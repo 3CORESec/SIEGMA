@@ -176,7 +176,13 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 					for k2, v2 in value.items():
 						if type(v2) == list:
 							sigma_extra_params += f'--{key} {k2}=' + ','.join(v2) + ' '
-						if type(v2) == str or type(v2) == bool:
+						if type(v2) == str:
+							if v2 == "": 
+								v2 = "\"\""
+								print("sep empty string...")
+							sigma_extra_params += f'--{key} {k2}={v2} '
+							print("sep string...")
+						if type(v2) == bool:
 							sigma_extra_params += f'--{key} {k2}={v2} '
 		logger.debug('Checking sigma_params from config...')
 		if (not already_done) and type(sigma_params) == dict and len(sigma_params) > 0:

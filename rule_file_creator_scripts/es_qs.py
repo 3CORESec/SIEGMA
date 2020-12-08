@@ -350,18 +350,27 @@ def get_notes(notes_folder, config_n, yj_rule_n, logger):
     return ret
 
 
-def add_new_items_to_config(shared_config, rule_config):
+def find_d2_kv_in_d1(d1, d2):
+    for k2, v2 in d2.items():
+        if k2 in d1:
+            d1[k2] = v2
+    return d1
 
+
+def add_new_items_to_config(shared_config, rule_config, logger):
+    if 'settings' in rule_config: 
+        shared_config = find_d2_kv_in_d1(shared_config, rule_config.get('settings'))
+    logger.info('add_new_items_to_config() finished successfully...')
     return shared_config
 
 
-def create_rule(notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
+def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_es_qs_rule()...')
     rule_file = None
     try:
         logger.debug(config)
         # # set siegma config as per config defined in rule
-        config = add_new_items_to_config(config, yj_rule.get('siegma').get('config')) if 'siegma' in yj_rule and 'config' in yj_rule.get('siegma') else config
+        config = add_new_items_to_config(config, yj_rule.get('siegma').get('config'), logger) if 'siegma' in yj_rule and 'config' in yj_rule.get('siegma') else config
         # set query
         config['query'] = query
         # set author name

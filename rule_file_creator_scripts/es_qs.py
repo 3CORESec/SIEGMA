@@ -18,9 +18,12 @@ def get_author_name(yj_rule):
 
 
 def dump_to_file(dictionary, output='.output.ndjson'):
-    with open(output, "a") as outfile:
-        json.dump(dictionary, outfile)
-        outfile.write('\n')
+    try:
+        with open(output, "a") as outfile:
+            json.dump(dictionary, outfile)
+            outfile.write('\n')
+    except Exception as e:
+        print(f"Exception {e} occurred in dump_to_file()...")
     return output
 
 
@@ -74,7 +77,7 @@ def get_technique_from_mitre(attack, technique_id):
             ret['reference'] = technique.wiki
             found = True
             break
-    # in case of an incorrect tecnique ID, it won't be detected so we need to let the parent function know that we failed to find the unknown technique.
+    # in case of an incorrect technique ID, it won't be detected so we need to let the parent function know that we failed to find the unknown technique.
     # if not found: ret = None
     return ret
 
@@ -184,7 +187,7 @@ def get_mitre_ttps(attack, yj_rule):
                             temp2['technique'].append(subtechnique)    
                     if is_technique_boolean:
                         temp2['technique'].append(technique)
-        # So only non-empty and valid tatics and techniques make it to the final output
+        # So only non-empty and valid tactics and techniques make it to the final output
         if temp2.get('tactic') != {} and temp2.get('technique') != [] and temp2.get('tactic').get('id') != '':
             ret.append(temp2)
     # pprint(temp)
@@ -213,7 +216,7 @@ def valid_credentials(credentials, logger):
                 logger.debug('kibana_url exists...')
     if creds_exist and username_exist and password_exist and url_exist:
         ret = True
-        logger.info('Exisiting creds found. Output file shall be uploaded to ELK...')
+        logger.info('Existing creds found. Output file shall be uploaded to ELK...')
     else:
         ret = False
         logger.info('No creds found. Output file shall not be uploaded to ELK...')
@@ -335,42 +338,49 @@ def get_notes(notes_folder, config_n, yj_rule_n, logger):
                 print(ret)
     except Exception as e:
         logger.error(f'Exception {e} occurred in get_notes()...')
+        return ret
+    logger.info(f'get_notes() finished successfully...')
     return ret
 
 def create_rule(notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_es_qs_rule()...')
     rule_file = None
-    logger.debug(config)
-    # set query
-    config['query'] = query
-    # set author name
-    config['author'] = config.get('author') if not (config.get('author') is None or config.get('author') == '' or config.get('author') == []) else get_author_name(yj_rule.get('author'))
-    # name set
-    config['name'] = yj_rule.get('title')
-    # description set
-    config['description'] = yj_rule.get('description')
-    # falsepositives set
-    if yj_rule.get('falsepositives'): config['false_positives'] = yj_rule.get('falsepositives')
-    # references set
-    if yj_rule.get('references'): config['references'] = yj_rule.get('references')
-    # severity set
-    config['severity'] = yj_rule.get('level')
-    # risk score set
-    config['risk_score'] = get_risk_score(yj_rule.get('level')) if 'score' not in yj_rule else yj_rule.get('score')
-    # tags set
-    config['tags'] = yj_rule.get('siemtags') if yj_rule and 'siemtags' in yj_rule and type(yj_rule.get('siemtags')) == list else []
-    # MITRE settings
-    if yj_rule.get('tags'): config['threat'] = get_mitre_ttps(attack, yj_rule.get('tags'))
-    # rule ID set
-    config['rule_id'] = config['id'] = yj_rule.get('id')
-    # time set
-    if 'timeframe' in yj_rule.get('detection'): config['from'] = 'now-' + yj_rule.get('detection').get('timeframe')
-    # rate_based_rule
-    config = rate_based_rule_settings(sigma_config, config, config.get('threshold'), yj_rule.get('threshold'), logger)
-    # investigation notes
-    config['note'] = get_notes(notes_folder, config.get('note'), yj_rule.get('note'), logger)
-    #############
-    logger.info('Final config:')
-    pprint(config)
-    rule_file = dump_to_file(config, output=output)
+    try:
+        logger.debug(config)
+        # # set siegma config as per config defined in rule
+        # config = if
+        # set query
+        config['query'] = query
+        # set author name
+        config['author'] = config.get('author') if not (config.get('author') is None or config.get('author') == '' or config.get('author') == []) else get_author_name(yj_rule.get('author'))
+        # name set
+        config['name'] = yj_rule.get('title')
+        # description set
+        config['description'] = yj_rule.get('description')
+        # falsepositives set
+        if yj_rule.get('falsepositives'): config['false_positives'] = yj_rule.get('falsepositives')
+        # references set
+        if yj_rule.get('references'): config['references'] = yj_rule.get('references')
+        # severity set
+        config['severity'] = yj_rule.get('level')
+        # risk score set
+        config['risk_score'] = get_risk_score(yj_rule.get('level')) if 'score' not in yj_rule else yj_rule.get('score')
+        # tags set
+        config['tags'] = yj_rule.get('siemtags') if yj_rule and 'siemtags' in yj_rule and type(yj_rule.get('siemtags')) == list else []
+        # MITRE settings
+        if yj_rule.get('tags'): config['threat'] = get_mitre_ttps(attack, yj_rule.get('tags'))
+        # rule ID set
+        config['rule_id'] = config['id'] = yj_rule.get('id')
+        # time set
+        if 'timeframe' in yj_rule.get('detection'): config['from'] = 'now-' + yj_rule.get('detection').get('timeframe')
+        # rate_based_rule
+        config = rate_based_rule_settings(sigma_config, config, config.get('threshold'), yj_rule.get('threshold'), logger)
+        # investigation notes
+        config['note'] = get_notes(notes_folder, config.get('note'), yj_rule.get('note'), logger)
+        #############
+        logger.info('Final config:')
+        pprint(config)
+        rule_file = dump_to_file(config, output=output)
+    except Exception as e:
+        logger.error(f'Exception {e} occurred in create_rule()...')
     return rule_file

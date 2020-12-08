@@ -28,6 +28,7 @@ def get_slash_set_path(path):
 				path = path.replace('\\', slash)
 	except Exception as e:
 		print(f"Exception {e} occurred in get_slash_set_path() for path {path}...")
+	print(f"get_slash_set_path() finished successfully for path {path}...")
 	return path
 
 

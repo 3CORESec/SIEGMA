@@ -315,15 +315,19 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
 def get_notes(notes_folder, config_n, yj_rule_n, logger):
     ret = ''
     file_name = ''
-    config_n = get_slash_set_path(config_n)
-    yj_rule_n = get_slash_set_path(yj_rule_n)
+    if type(config_n) == str and config_n != "": 
+        config_n = [config_n]
+    config_n = [get_slash_set_path(i) for i in config_n]
+    if type(yj_rule_n) == str and yj_rule_n != "": 
+        yj_rule_n = [yj_rule_n]
+        yj_rule_n = [get_slash_set_path(i) for i in yj_rule_n]
     update_required = False
     try:
-        if (not update_required) and yj_rule_n and (yj_rule_n != ''):
+        if (not update_required) and yj_rule_n and type(yj_rule_n) == list and len(yj_rule_n) > 0:
             file_name = yj_rule_n
             update_required = True
             logger.debug('File name set from rule...')
-        elif (not update_required) and config_n and (config_n != ''):
+        elif (not update_required) and config_n and type(config_n) == list and len(config_n) > 0:
             file_name = config_n
             update_required = True
             logger.debug('File name set from config...')
@@ -332,15 +336,24 @@ def get_notes(notes_folder, config_n, yj_rule_n, logger):
             # add forward/back slash to end of folder name
             if notes_folder and len(notes_folder) > 0 and notes_folder[-1] != get_slashes(): notes_folder += get_slashes()
             # remove forward/back slash from start of file name
-            if file_name and len(file_name) > 0 and file_name[0] == get_slashes(): file_name = file_name[1:]
-            with open(get_slash_set_path(notes_folder + file_name)) as input_file:
-                ret = input_file.read()
-                print(ret)
+            if file_name and len(file_name) > 0 and type(file_name) == list:
+                for i in file_name:
+                    if i[0] == get_slashes(): i = i[1:]
+                    with open(get_slash_set_path(notes_folder + i)) as input_file:
+                        ret += input_file.read()
+                        ret += "\n"
+                        print(ret)
     except Exception as e:
         logger.error(f'Exception {e} occurred in get_notes()...')
         return ret
     logger.info(f'get_notes() finished successfully...')
     return ret
+
+
+def add_new_items_to_config(shared_config, rule_config):
+
+    return shared_config
+
 
 def create_rule(notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_es_qs_rule()...')
@@ -348,7 +361,7 @@ def create_rule(notes_folder, config, sigma_config, credentials, query, yj_rule,
     try:
         logger.debug(config)
         # # set siegma config as per config defined in rule
-        # config = if
+        config = add_new_items_to_config(config, yj_rule.get('siegma').get('config')) if 'siegma' in yj_rule and 'config' in yj_rule.get('siegma') else config
         # set query
         config['query'] = query
         # set author name

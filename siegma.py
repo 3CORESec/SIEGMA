@@ -189,6 +189,8 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 			logger.debug('sigma_params from config will be used...')
 			for key, value in sigma_params.items():
 				if type(value) == list:
+					# ignore sigma params with empty lists
+					if value == [""]: continue
 					logger.debug('list type params found for key {}...'.format(key))
 					for item in value:
 						sigma_extra_params += '{} {}  '.format(key, item)

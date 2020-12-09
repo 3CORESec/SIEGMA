@@ -12,7 +12,7 @@ This page provides developers with the information required to develop support f
 * Under [rule_file_creator_scripts](rule_file_creator_scripts) folder, add a script by the name of the format that you want to support. For example: [es-qs.py](rule_file_creator_scripts/es-qs.py). This script shall contain all the heavy lifting for conversions. See [es-qs.py](rule_file_creator_scripts/es-qs.py) for reference.
   * 3 main functions inside the [es-qs.py](rule_file_creator_scripts/es-qs.py) get called from [siegma.py](siegma.py) and performs all the tasks related to rule file creation.
     * Function 1 - create_rule_file: This function will take in Sigma rule and configuration as input and prepare the rule file.
-    * Function 2 - validate_credentials: This function will take in credentials from the configuration and confirm if the credentuals are valid or not.
+    * Function 2 - validate_credentials: This function will take in credentials from the configuration and confirm if the credentials are valid or not.
     * Function 3 - install_rule: This function will upload and install the final rule file on the SIEM/Product.
 * At the top of [siegma.py](../siegma.py), import your newly created script file.
 * Go to create_rule_file_for_siem() in [siegma.py](../siegma.py). Add an if/else and point it to the function in your new_format.py.

@@ -29,7 +29,7 @@ cd sigma
 python3 -m virtualenv .venv3
 . .venv3/bin/activate
 cd tools
-pip install -r requirements.txt
+pip install -r requirements.txt --ignore-installed --no-cache-dir
 ```
 
 * Setup SIEGMA
@@ -39,7 +39,7 @@ git clone https://github.com/3CORESec/SIEGMA
 cd SIEGMA
 python3 -m virtualenv .venv3
 . .venv3/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt --ignore-installed --no-cache-dir
 ```
 
 *Note for Windows users*: Powershell must be enabled for command and script execution. Open `Administrative Powershell` and execute following command: `Set-ExecutionPolicy Bypass` 

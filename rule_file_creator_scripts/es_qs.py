@@ -83,18 +83,19 @@ def get_technique_from_mitre(attack, technique_id):
 
 
 def get_tactic_from_mitre(attack, item):
-    print('Starting get_tactic_from_mitre()...')
+    print(f'Starting get_tactic_from_mitre() for item {item}...')
     ret = {
         'id': '',
         'name': '',
         'reference': ''
     }
     for tactic in attack.enterprise.tactics:
+        # print('Tactic name: ')
         # print(tactic.name)
         if tactic.name.lower() == item:
-            print(tactic.id)
-            print(tactic.name)
-            print(tactic.wiki)
+            # print(tactic.id)
+            # print(tactic.name)
+            # print(tactic.wiki)
             ret['id'] = tactic.id
             ret['name'] = tactic.name
             ret['reference'] = tactic.wiki
@@ -106,16 +107,16 @@ def is_tactic(attack, item):
     is_tactic_boolean = False
     tactic = {}
     match_list = re.findall(r'^attack\.\w{5,}.*$', item)
-    print(match_list)
+    # print(match_list)
     if len(match_list) > 0:
-        print(match_list)
+        # print(match_list)
         is_tactic_boolean = True
         tactic = get_tactic_from_mitre(attack, item.replace('attack.', '').replace('_', ' '))
     return is_tactic_boolean, tactic
 
 
 def get_subtechnique_from_mitre(attack, item):
-    print('Starting get_subtechnique_from_mitre()...')
+    print(f'Starting get_subtechnique_from_mitre() for item {item}...')
     ret = {
         'id': '',
         'name': '',
@@ -138,15 +139,15 @@ def is_subtechnique(attack, item):
     is_subtechnique_boolean = False
     subtechnique = {}
     match_list = re.findall(r'^(attack\.t\d{4,})\.\d+$', item)
-    print(match_list)
+    # print(match_list)
     if len(match_list) > 0:
-        print(match_list)
+        # print(match_list)
         is_subtechnique_boolean = True
         subtechnique = get_subtechnique_from_mitre(attack, item.replace('attack.', ''))
     return is_subtechnique_boolean, subtechnique
 
 
-def get_mitre_ttps(attack, yj_rule):
+def get_mitre_ttps(attack, yj_rule, logger):
     # Sample MITRE TTPs format
     # tags:
     # - attack.defense_evasion
@@ -170,7 +171,9 @@ def get_mitre_ttps(attack, yj_rule):
     # Read tactic.
     for item in yj_rule[idx:]:
         temp2 = copy.deepcopy(temp)
+        logger.debug(f'item: {item}\tidx: {idx}')
         is_tactic_boolean, tactic = is_tactic(attack, item)
+        logger.debug(f'is_tactic_boolean: {is_tactic_boolean}')
         temp2['tactic'] = tactic
         if is_tactic_boolean:
             idx += 1
@@ -390,7 +393,7 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         # tags set
         config['tags'] = yj_rule.get('siemtags') if yj_rule and 'siemtags' in yj_rule and type(yj_rule.get('siemtags')) == list else []
         # MITRE settings
-        if yj_rule.get('tags'): config['threat'] = get_mitre_ttps(attack, yj_rule.get('tags'))
+        if yj_rule.get('tags'): config['threat'] = get_mitre_ttps(attack, yj_rule.get('tags'), logger)
         # rule ID set
         config['rule_id'] = config['id'] = yj_rule.get('id')
         # time set

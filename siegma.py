@@ -71,7 +71,7 @@ def initialize_g_vars():
 	args.rule = args.rule.rstrip('/')
 	args.sigma_venv = args.sigma_venv.rstrip('\\')
 	args.sigma_venv = args.sigma_venv.rstrip('/')
-	if args.verbosity is not None and not args.verbosity: logger.setLevel(args.verbosity)
+	logger.setLevel(args.verbosity)
 	logger.info('initialize_g_vars() finished successfully...')
 
 

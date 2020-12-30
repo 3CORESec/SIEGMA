@@ -7,13 +7,32 @@ from pprint import pprint
 from helpers.utils import get_slash_set_path, get_slashes
 
 
-def get_author_name(yj_rule):
+def get_author_name_s2(val):
+    '''
+    Sub function of author name that performs several checks before finalizing the author name
+    '''
     ret = None
-    if type(yj_rule) == list:
-        ret = yj_rule
-    elif type(yj_rule) == str:
-        ret = [yj_rule]
-    else: ret = list(yj_rule)
+    if type(val) == list:
+        ret = val
+    elif type(val) == str:
+        ret = [val]
+    else: ret = list(val)
+    return ret
+
+
+def get_author_name(yj_rule, config, logger):
+    ret = None
+    already_done = False
+    if not already_done:
+        ret = get_author_name_s2(yj_rule)
+        if ret is not None: 
+            already_done = True
+            logger.debug(f'Author {ret} name set from rule...')
+    if not already_done: 
+        ret = get_author_name_s2(config)
+        if ret is not None: 
+            already_done = True
+            logger.debug(f'Author {ret} name set from config...')
     return ret
 
 
@@ -377,7 +396,7 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         # set query
         config['query'] = query
         # set author name
-        config['author'] = config.get('author') if not (config.get('author') is None or config.get('author') == '' or config.get('author') == []) else get_author_name(yj_rule.get('author'))
+        config['author'] = get_author_name(yj_rule.get('author'), config.get('author'), logger)
         # name set
         config['name'] = yj_rule.get('title')
         # description set

@@ -251,6 +251,7 @@ def handle_response_errors(status_code, message, logger):
 
 
 def install_rules(script_dir, credentials, rule_file, logger):
+    return_status = 0
     # if windows, execute these commands
     curl_path = get_slash_set_path(script_dir + '/helpers/curl/curl.exe')
     logger.debug('Script Dir: {}'.format(curl_path))
@@ -265,6 +266,8 @@ def install_rules(script_dir, credentials, rule_file, logger):
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         result_out = json.loads(result.stdout.decode('utf-8'))
         result_error = result.stderr.decode('utf-8')
+        # if error code var is not empty, then set return status to 1
+        if result.returncode != 0: return_status = 1
         logger.debug(result_out)
         logger.error(result_error)
     # if linux machine
@@ -276,14 +279,29 @@ def install_rules(script_dir, credentials, rule_file, logger):
         proc_stdout = process.communicate()[0].strip().decode('utf-8')
         print(proc_stdout)
         result_out = json.loads(proc_stdout)
+        result_error = process.returncode
+        # if error code var is not empty, then set return status to 1
+        if result_error != 0: return_status = 1
         logger.debug(result_out)
     logger.info('Import Successful: {}...'.format(result_out.get('success')))
+    # if elasticsearch output var is not empty, then set return status to 1
+    if result_out.get('success') != True:
+        return_status = 1
     logger.info('Count Successfully Imported Rules: {}...'.format(result_out.get('success_count')))
+    # if elasticsearch output var is not empty, then set return status to 1
+    if result_out.get('success_count') <= 0:
+        return_status = 1
     logger.info('Import Errors: {}...'.format(result_out.get('errors')))
+    # if elasticsearch output var is not empty, then set return status to 1
+    if len(result_out.get('errors')) > 0:
+        return_status = 1
     logger.info('Response Message: {}...'.format(result_out.get('message')))
     logger.info('Response status code: {}...'.format(result_out.get('status_code')))
+    # if elasticsearch output var is not empty, then set return status to 1
+    if result_out.get('status_code') != None:
+        return_status = 1
     handle_response_errors(result_out.get('status_code'), result_out.get('message'), logger)
-    return query
+    return return_status, query
 
 
 def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):

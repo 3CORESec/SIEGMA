@@ -86,6 +86,7 @@ def get_sigma_path_from_config(config):
 def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters):
 	# if windows, execute these commands
 	result = query = command = None
+	return_status = 0
 	try:
 		# if windows machine
 		if os.name == 'nt':
@@ -95,6 +96,8 @@ def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_que
 			result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 			result_out = result.stdout.decode('utf-8')
 			result_error = result.stderr.decode('utf-8')
+			# if error code var is not empty, then set return status to 1
+			if result.returncode != 0: return_status = 1
 			query = result_out.splitlines()[0]
 			logger.debug(query)
 			logger.error(result_error)
@@ -106,12 +109,16 @@ def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_que
 			logger.debug(command)
 			process = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
 			proc_stdout = process.communicate()[0].strip().decode('utf-8')
+			result_error = process.returncode
+			# if error code var is not empty, then set return status to 1
+			if result_error != 0: return_status = 1
 			print(proc_stdout)
 			query = proc_stdout.splitlines()[-1]
 			logger.info(query)
 	except Exception as e:
 		logger.error('Exception {} occurred in get_sigma_query_conversion_result()...'.format(e))
-	return query
+		return_status = 1
+	return return_status, query
 
 
 def load_yaml_rule_into_json(yj_rule):
@@ -206,9 +213,13 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 
 
 def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name):
+	return_status = 0
 	if sigma_query_format in ['es-qs']:
 		if es_qs.valid_credentials(credentials, logger):
-			es_qs.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, logger)
+			return_status, query = es_qs.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, logger)
+		else:
+			return_status = 1
+	return return_status
 
 
 def get_dict_from_dot_separated_string(ret, len_dlist, dlist, value):
@@ -272,25 +283,37 @@ def update_config(config_override, config):
 	return ret
 
 
+def quit_script_with_error_if_failed(status):
+	# if the command did not return status 0, consider it to be ended in error and therefore, exit the script with bash return code of 1
+	if status != 0:
+		logger.error('Ending script with error code: {}'.format(status))
+		sys.exit(1)
+
+
 def main():
 	try:
 		initialize_g_vars()
 		empty_output_file(output=args.output)
 		out_file_name = ''
+		return_status = 0
 		for idx, rule in enumerate(get_all_rule_files(args.rule)):
 			logger.debug('rule iteration {}...'.format(idx))
-			query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params'), load_yaml_rule_into_json(rule)))
+			return_status, query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params'), load_yaml_rule_into_json(rule)))
 			if args.config_override != "":
 				# if config override switch has values then update config
 				args.config = update_config(args.config_override, args.config)
 			out_file_name = create_rule_file_for_siem(args.config, args.config.get('notes_folder'), args.config.get('sigma_query_format'), args.sigma_config, args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
+			quit_script_with_error_if_failed(return_status)
 		if not args.testing:
-			install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
+			return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
+			quit_script_with_error_if_failed(return_status)
 		else:
 			logger.info('No rules installed on SIEM since Testing switch is enabled...')
+		quit_script_with_error_if_failed(return_status)
 	except Exception as e:
 		logger.error('Exception {} occurred in main of file {}...'.format(e, os.path.basename(__file__)))
+		quit_script_with_error_if_failed(1)
 
 
 # main flow of the program

@@ -75,6 +75,8 @@ def is_technique(attack, item):
         is_technique_boolean = True
         technique = get_technique_from_mitre(attack, item.replace('attack.', ''))
         # if technique: is_technique_boolean = True
+    print('technique item {} data:'.format(item))
+    pprint(technique)
     return is_technique_boolean, technique
 
 
@@ -126,11 +128,14 @@ def is_tactic(attack, item):
     is_tactic_boolean = False
     tactic = {}
     match_list = re.findall(r'^attack\.\w{5,}.*$', item)
+    if item.count('.') > 1: match_list = []
     # print(match_list)
     if len(match_list) > 0:
         # print(match_list)
         is_tactic_boolean = True
         tactic = get_tactic_from_mitre(attack, item.replace('attack.', '').replace('_', ' '))
+    print('tactic item {} data:'.format(item))
+    pprint(tactic)
     return is_tactic_boolean, tactic
 
 
@@ -154,7 +159,7 @@ def get_subtechnique_from_mitre(attack, item):
 
 
 def is_subtechnique(attack, item):
-    print('Starting is_tactic()...')
+    print('Starting is_subtechnique()...')
     is_subtechnique_boolean = False
     subtechnique = {}
     match_list = re.findall(r'^(attack\.t\d{4,})\.\d+$', item)
@@ -195,20 +200,30 @@ def get_mitre_ttps(attack, yj_rule, logger):
         logger.debug(f'is_tactic_boolean: {is_tactic_boolean}')
         temp2['tactic'] = tactic
         if is_tactic_boolean:
+            logger.debug('Now inside tactic techniques if/else...')
             idx += 1
-            if idx < len(yj_rule) - 1:
+            logger.debug('Current idx after ++: {}'.format(idx))
+            logger.debug('len_uj_rule ++: {}'.format(len(yj_rule)))
+            if idx <= len(yj_rule) - 1:
                 # Read techniques below
-                for item2 in yj_rule[idx:]:
+                logger.debug('Started inside for loop...')
+                for idx2, item2 in enumerate(yj_rule[idx:]):
+                    logger.debug('for loop is_technique part...')
                     is_technique_boolean, technique = is_technique(attack, item2)
                     if not is_technique_boolean:
                         # Read subtechniques
+                        logger.debug('for loop not is_technique part...')
                         is_subtechnique_boolean, subtechnique = is_subtechnique(attack, item2)
                         if not is_subtechnique_boolean:
+                            logger.debug('for loop not is_subtechnique part...')
                             break
                         if is_subtechnique_boolean:
+                            logger.debug('for loop is_subtechnique part...')
                             temp2['technique'].append(subtechnique)    
                     if is_technique_boolean:
                         temp2['technique'].append(technique)
+                    idx += idx2
+                logger.debug('Finished inside for loop...')
         # So only non-empty and valid tactics and techniques make it to the final output
         if temp2.get('tactic') != {} and temp2.get('technique') != [] and temp2.get('tactic').get('id') != '':
             ret.append(temp2)

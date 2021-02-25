@@ -14,7 +14,7 @@ This page provides developers with the information required to develop support f
     * Function 1 - create_rule_file: This function will take in Sigma rule and configuration as input and prepare the rule file.
     * Function 2 - validate_credentials: This function will take in credentials from the configuration and confirm if the credentials are valid or not.
     * Function 3 - install_rule: This function will upload and install the final rule file on the SIEM/Product.
-* At the top of [siegma.py](../siegma.py), import your newly created script file.
+* At the top of [siegma.py](siegma.py), import your newly created script file.
 * Go to create_rule_file_for_siem() in [siegma.py](siegma.py). Add an if/else and point it to the function in your new_format.py.
 * Go to main() in [siegma.py](siegma.py) and update it to point to the correct installation and validation functions for the newly created rule format script.
 

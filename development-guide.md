@@ -9,7 +9,7 @@ This page provides developers with the information required to develop support f
   * Or create a new folder under [config](config) along with the configuration file and corresponding README. See [elastic](config/elastic) for reference.
 * Setup Sigma repository.
 * Setup SIEGMA repository.
-* Under [rule_file_creator_scripts](rule_file_creator_scripts) folder, add a script by the name of the format that you want to support. For example: [es-qs.py](rule_file_creator_scripts/es_qs.py). This script shall contain all the heavy lifting for conversions. See [es_qs.py](rule_file_creator_scripts/es_qs.py) for reference.
+* Under [rule_file_creator_scripts](rule_file_creator_scripts) folder, add a script by the name of the format that you want to support. For example: [es_qs.py](rule_file_creator_scripts/es_qs.py). This script shall contain all the heavy lifting for conversions. See [es_qs.py](rule_file_creator_scripts/es_qs.py) for reference.
   * 3 main functions inside the [es_qs.py](rule_file_creator_scripts/es_qs.py) get called from [siegma.py](siegma.py) and performs all the tasks related to rule file creation.
     * Function 1 - create_rule_file: This function will take in Sigma rule and configuration as input and prepare the rule file.
     * Function 2 - validate_credentials: This function will take in credentials from the configuration and confirm if the credentials are valid or not.

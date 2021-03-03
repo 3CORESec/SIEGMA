@@ -50,7 +50,7 @@ def setup_logger(log_fmt="%(log_color)s%(asctime)s:%(levelname)s:%(message)s", l
 
 	formatter = colorlog.ColoredFormatter(
 		log_fmt,
-		datefmt='%D'
+		datefmt='%DT%H:%M:%SZ'
 	)
 
 	logger = logging.getLogger()

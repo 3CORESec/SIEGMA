@@ -322,6 +322,7 @@ def install_rules(script_dir, credentials, rule_file, logger):
 def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
     # directly make changes to config variable and then return it at the end
     temp = {}
+    configtemp = {}
     update_required = False
     try:
         logger.debug('if else starting...')
@@ -341,8 +342,8 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
             # elif (not update_required) and config_t and config_t.get('field') and (not config_t.get('field') == '') and config_t.get('value') and type(config_t.get('value')) == int: 
             elif (not update_required) and config_t and config_t.get('field') is not None and config_t.get('value') is not None and type(config_t.get('value')) == int: 
             # elif (not update_required) and config_t and config_t.get('value') and type(config_t.get('value')) == int: 
-                # if threshold is not defined in siegma config
-                temp = config_t
+                # if threshold is defined in siegma config
+                configtemp = config_t
                 update_required = True
                 logger.debug('config threshold set...')
             else: logger.debug('temp is empty...')
@@ -352,7 +353,10 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
             # handle empty field gracefully
             # t = temp.get('field')
             # logger.debug(f'temp.field: {t}')
-            if temp.get('field') and temp.get('field') != '': ecs_field = sigma_config.get('fieldmappings').get(temp.get('field'))
+            if configtemp.get('field') and configtemp.get('field') != '': 
+                ecs_field = sigma_config.get('fieldmappings').get(temp.get('field'))
+            else:
+                ecs_field = temp.get('field')
             config['threshold'] = {
                 'field' : ecs_field,
                 'value': temp.get('value')

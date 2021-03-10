@@ -334,14 +334,14 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
                 # if in the rule, field or value under threshold are empty or null, then rule is not rate based.
                 if yj_rule_t.get('field') is None or yj_rule_t.get('value') is None: break
                 if yj_rule_t.get('field') is not None and yj_rule_t.get('value') is not None and type(yj_rule_t.get('value')) == int: 
-                # if threshold is not defined in siegma config
+                # if threshold is defined in rule
                     temp = yj_rule_t
                     update_required = True
                     logger.debug('rule threshold set...')
             # elif (not update_required) and config_t and config_t.get('field') and (not config_t.get('field') == '') and config_t.get('value') and type(config_t.get('value')) == int: 
             elif (not update_required) and config_t and config_t.get('field') is not None and config_t.get('value') is not None and type(config_t.get('value')) == int: 
             # elif (not update_required) and config_t and config_t.get('value') and type(config_t.get('value')) == int: 
-                # if threshold is not defined in siegma config
+                # if threshold is defined in siegma config
                 temp = config_t
                 update_required = True
                 logger.debug('config threshold set...')
@@ -352,7 +352,10 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
             # handle empty field gracefully
             # t = temp.get('field')
             # logger.debug(f'temp.field: {t}')
-            if temp.get('field') and temp.get('field') != '': ecs_field = sigma_config.get('fieldmappings').get(temp.get('field'))
+            # try to convert threshold field to sigma mapped field.
+            if temp.get('field') and temp.get('field') != '' and sigma_config.get('fieldmappings').get(temp.get('field')) is not None: ecs_field = sigma_config.get('fieldmappings').get(temp.get('field'))
+            # if conversion fails, then consider whatever value was in the threshold.field as ecs formatted and move forward with that
+            else: ecs_field = temp.get('field')
             config['threshold'] = {
                 'field' : ecs_field,
                 'value': temp.get('value')

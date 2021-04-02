@@ -86,6 +86,15 @@ The example below will overwrite the `settings.author`, `credentials.kibana_url`
 
 `python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.author=none,credentials.kibana_url="www.example.com",credentials.kibana_username="bfd" -o output-file`
 
+# Rules compliance
+
+To check if the rules are in the correct format and processable by SIEGMA, run following commands:
+
+```
+cd helpers
+python check_if_compliant.py -p path/to/rules/directory/
+```
+
 # SIEM Automatic Import
 
 If you'd like to enable automatic upload of consumables into your SIEM, please enter your environment variables in the [config](config/) of your platform or specify them through `-co` as previously shown. 
@@ -102,6 +111,7 @@ Want to know more how it all comes together or want to contribute support for a 
 - ~~Override siegma config from the commandline~~
 - ~~Functionality to create aggregate rules in Elastic/Kibana using `es-qs` as backend~~
 - ~~Enable notes/investigation guide addition to Kibana using es-qs as backend~~
+- ~~Compliance check for rules if they are in the format that is supported by siegma or not~~
 
 # Feedback
 

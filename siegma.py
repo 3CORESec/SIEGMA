@@ -9,7 +9,7 @@ import collections
 from pyattck import Attck
 from pprint import pprint
 from rule_file_creator_scripts import es_qs
-from helpers.utils import setup_logger, config_file_to_dict, get_slash_set_path
+from helpers.utils import setup_logger, config_file_to_dict, get_slash_set_path, get_slashes
 
 
 # global vars
@@ -283,6 +283,23 @@ def update_config(config_override, config):
 	return ret
 
 
+def check_rules_compliance(rules, return_status):
+	rules_are_compliant = True
+	logger.info('Windows powershell command shall be executed...')
+	command = 'python helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules)
+	logger.debug(command)
+	result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+	result_out = result.stdout.decode('utf-8')
+	result_error = result.stderr.decode('utf-8')
+	for i in result_out.splitlines():
+		logger.error(i)
+	# if error code var is not empty, then set return status to 1
+	if result.returncode != 0: 
+		rules_are_compliant = False
+		return_status = 1
+	return return_status, rules_are_compliant
+
+
 def quit_script_with_error_if_failed(status):
 	# if the command did not return status 0, consider it to be ended in error and therefore, exit the script with bash return code of 1
 	if status != 0:
@@ -296,6 +313,15 @@ def main():
 		empty_output_file(output=args.output)
 		out_file_name = ''
 		return_status = 0
+
+		# rule compliance check
+		logger.info('Checking if rule is in a siegma convertible format...')
+		return_status, rules_are_compliant = check_rules_compliance(args.rule, return_status)
+		if return_status != 0 or not rules_are_compliant: 
+			logger.error('Some of the rules are not in the format that is considered convertible by SIEGMA. Exting with error...')
+			quit_script_with_error_if_failed(return_status)
+		########################
+
 		for idx, rule in enumerate(get_all_rule_files(args.rule)):
 			logger.debug('rule iteration {}...'.format(idx))
 			return_status, query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params'), load_yaml_rule_into_json(rule)))

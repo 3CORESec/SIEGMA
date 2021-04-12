@@ -3,7 +3,6 @@ import sys
 import argparse
 from os import listdir
 from pprint import pprint
-from utils import get_slashes
 from os.path import isfile, join
 
 

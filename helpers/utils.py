@@ -36,10 +36,10 @@ def get_slashes():
     ret = '\\'
     if os.name != 'nt': 
         ret = '/'
-        print('Non-windows machine...')
-    else:
-        print('Windows machine...')
-    print('Returning {}...'.format(ret))
+    #     print('Non-windows machine...')
+    # else:
+    #     print('Windows machine...')
+    # print('Returning {}...'.format(ret))
     return ret
 
 

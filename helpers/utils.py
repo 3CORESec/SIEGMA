@@ -33,12 +33,13 @@ def get_slash_set_path(path):
 
 
 def get_slashes():
-    ret = '/'
+    ret = '\\'
     if os.name != 'nt': 
-        ret = '\\'
+        ret = '/'
         print('Non-windows machine...')
     else:
         print('Windows machine...')
+    print('Returning {}...'.format(ret))
     return ret
 
 

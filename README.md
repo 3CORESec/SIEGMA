@@ -88,7 +88,9 @@ The example below will overwrite the `settings.author`, `credentials.kibana_url`
 
 # Rules compliance
 
-To check if the rules are in the correct format and processable by SIEGMA, run following commands:
+SIEGMA natively makes use of this script for rule format compliance check.
+
+However, to manually check if the rules are in the correct format and processable by SIEGMA, run following commands:
 
 ```
 cd helpers

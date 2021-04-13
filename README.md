@@ -113,7 +113,7 @@ Want to know more how it all comes together or want to contribute support for a 
 - ~~Enable notes/investigation guide addition to Kibana using es-qs as backend~~
 - ~~Compliance check for rules if they are in the format that is supported by siegma or not~~
 - ~~Add rule format compliance check~~
-- Remove sigma virtualenv and shift to pipenv
+- ~~Remove sigma virtualenv and shift to pipenv~~
 
 # Feedback
 

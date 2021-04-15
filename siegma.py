@@ -285,15 +285,40 @@ def update_config(config_override, config):
 
 def check_rules_compliance(rules, return_status):
 	rules_are_compliant = True
+	result_out = None
+	result_error = None
+	result = None
 	logger.info('Following command shall be executed...')
-	command = 'python {2}{0}helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules, os.path.abspath(os.getcwd()))
-	logger.debug(command)
-	result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-	result_out = result.stdout.decode('utf-8')
-	result_error = result.stderr.decode('utf-8')
+	# command = 'pipenv run python {2}{0}helpers{0}check_if_compliant.py -p {2}{1}'.format(get_slashes(), rules, os.path.abspath(os.getcwd()))
+	# command = 'pipenv run python helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules, os.path.abspath(os.getcwd()))
+	# if windows machine
+	if os.name == 'nt':
+		command = 'pipenv run python helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules, os.path.abspath(os.getcwd()))
+		logger.debug('Command:')
+		logger.debug(command)
+		result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+		result_out = result.stdout.decode('utf-8')
+		result_error = result.stderr.decode('utf-8')
+		# for i in result_out.splitlines():
+		# 	logger.error(i)
+		# if error code var is not empty, then set return status to 1
+	# if linux machine
+	else:
+		logger.info('Linux shell shall be executed...')
+		command = 'pipenv run python helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules, os.path.abspath(os.getcwd()))
+		logger.debug('Command:')
+		logger.debug(command)
+		result = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
+		result_out = result.communicate()[0].strip().decode('utf-8')
+		# result_error = process.returncode
+		# if error code var is not empty, then set return status to 1
+		# if result_error != 0: return_status = 1
+		# print(proc_stdout)
+		# query = proc_stdout.splitlines()[-1]
+		# logger.info(query)
+	
 	for i in result_out.splitlines():
 		logger.error(i)
-	# if error code var is not empty, then set return status to 1
 	if result.returncode != 0: 
 		rules_are_compliant = False
 		return_status = 1

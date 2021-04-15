@@ -285,8 +285,8 @@ def update_config(config_override, config):
 
 def check_rules_compliance(rules, return_status):
 	rules_are_compliant = True
-	logger.info('Windows powershell command shall be executed...')
-	command = 'python helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules)
+	logger.info('Following command shall be executed...')
+	command = 'python {2}{0}helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules, os.path.abspath(os.getcwd()))
 	logger.debug(command)
 	result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 	result_out = result.stdout.decode('utf-8')

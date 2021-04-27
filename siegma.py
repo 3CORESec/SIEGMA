@@ -33,7 +33,6 @@ def setup_args():
 	parser.add_argument('-r', '--rule', metavar='<rule_file_path> / <rule_folder_path>', type=str, help='Rule file / folder path. Eg: /path/to/rule/file.yml or /path/to/rules/folder.')
 	parser.add_argument('-s', '--sigma', metavar='<sigma_directory>', type=str, default='', help='Sigma repository path. Eg: /path/to/sigma.')
 	parser.add_argument('-sc', '--sigma_config', metavar='<sigma_config_file>', type=str, default='', help='Sigma config file path. Eg: /path/to/sigma/tools/config/ecs-cloudtrail.yml.')
-	parser.add_argument('-sv', '--sigma_venv', metavar='<sigma_python_venv>', type=str, default='', help='Sigma repository Python virtual environment path. Eg: /path/to/sigma/.venv3.')
 	parser.add_argument('-o', '--output', metavar='<output_file>', type=str, default='.output', help='Output file path. Eg: /path/to/output_file.')
 	parser.add_argument('-co', '--config_override', metavar='<config_override>', type=str, default='', help='Values that can be used to override config. Eg: settings.rule_id="some_id",settings.custom_field="custom_value",custom_field="custom_value",settings.author=none,credentials.kibana_url="www.example.com",sigma_query_format="es-qs".')
 	parser.add_argument('-t', '--testing', dest='testing', action='store_true', help='Switch for testing. Default "False". If testing, output file will be created but the rule file will not be installed on SIEM. Eg: -t or --testing.')
@@ -64,13 +63,10 @@ def initialize_g_vars():
 	# get sigma config file path
 	args.sigma_config = args.sigma_config if not (args.sigma_config is None or args.sigma_config == '') else force_exit('Sigma Config is required...', exit=1)
 	logger.debug(args.sigma_config)
-	logger.debug(args.sigma_venv)
 	args.sigma = args.sigma.rstrip('\\')
 	args.sigma = args.sigma.rstrip('/')
 	args.rule = args.rule.rstrip('\\')
 	args.rule = args.rule.rstrip('/')
-	args.sigma_venv = args.sigma_venv.rstrip('\\')
-	args.sigma_venv = args.sigma_venv.rstrip('/')
 	logger.setLevel(args.verbosity)
 	logger.info('initialize_g_vars() finished successfully...')
 
@@ -83,7 +79,7 @@ def get_sigma_path_from_config(config):
 	return config.get('path_to_sigma_folder')
 
 
-def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters):
+def get_sigma_query_conversion_result(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters):
 	# if windows, execute these commands
 	result = query = command = None
 	return_status = 0
@@ -91,7 +87,7 @@ def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_que
 		# if windows machine
 		if os.name == 'nt':
 			logger.info('Windows powershell command shall be executed...')
-			command = 'powershell -nop -c "pipenv run python {0}\\tools\\sigmac -c {2} -t {3} {5} {4};"'.format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			command = 'powershell -nop -c "pipenv run python {0}\\tools\\sigmac -c {1} -t {2} {4} {3};"'.format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
 			logger.debug(command)
 			result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 			result_out = result.stdout.decode('utf-8')
@@ -104,7 +100,7 @@ def get_sigma_query_conversion_result(sigma, sigma_venv, sigma_config, sigma_que
 		# if linux machine
 		else:
 			logger.info('Linux shell shall be executed...')
-			command = "pipenv run python {0}/tools/sigmac -c {2} -t {3} {5} {4};".format(sigma, sigma_venv, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			command = "pipenv run python {0}/tools/sigmac -c {1} -t {2} {4} {3};".format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
 			logger.debug('Command:')
 			logger.debug(command)
 			process = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
@@ -349,7 +345,7 @@ def main():
 
 		for idx, rule in enumerate(get_all_rule_files(args.rule)):
 			logger.debug('rule iteration {}...'.format(idx))
-			return_status, query = get_sigma_query_conversion_result(args.sigma, args.sigma_venv, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params'), load_yaml_rule_into_json(rule)))
+			return_status, query = get_sigma_query_conversion_result(args.sigma, args.sigma_config, args.config.get('sigma_query_format'), rule, get_sigma_extra_parameters(args.sigma_extra_parameters, args.config.get('sigma_params'), load_yaml_rule_into_json(rule)))
 			if args.config_override != "":
 				# if config override switch has values then update config
 				args.config = update_config(args.config_override, args.config)

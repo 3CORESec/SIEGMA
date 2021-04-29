@@ -62,21 +62,21 @@ It is recommended to consult the `siegma.py` help, especially for advanced usage
 
 ## Generate an Elastic SIEM output from a single Sigma rule file
  
-`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
+`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
  
 ## Generate an Elastic SIEM output from a folder with several Sigma rule files
 
-`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/ -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
+`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/ -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
 
 An example where we utilize our [AWS CloudTrail Sigma configuration](https://blog.3coresec.com/2020/05/contributions-to-sigma-cloudtrailecs.html) to convert a single rule to Elastic SIEM output:
 
-`python siegma.py -c config/elastic/elastic-siem.json -r rules/cloudtrail_rule.yml -sv /path/to/sigma/virtualenv -s sigma/ -sc sigma/tools/config/ecs-cloudtrail.yml -o rule-output`
+`python siegma.py -c config/elastic/elastic-siem.json -r rules/cloudtrail_rule.yml -s sigma/ -sc sigma/tools/config/ecs-cloudtrail.yml -o rule-output`
 
 ## Generate an Elastic SIEM output from a rule file and also pass Sigma backend options
 
 In this example we will utilize `-sep` to request SIEGMA to use the advanced Sigma backend options that would be defined in the [Elastic config](config/elastic/)
 
-`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
+`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
 
 ## Generate an Elastic SIEM output from a rule file and also override elastic-siem.json config from commandline
 
@@ -84,7 +84,7 @@ In this example we will utilize the [Elastic config](config/elastic/) fields as 
 
 The example below will overwrite the `settings.author`, `credentials.kibana_url` and `credentials.kibana_username`.  
 
-`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -sv /path/to/sigma/virtualenv -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.author=none,credentials.kibana_url="www.example.com",credentials.kibana_username="bfd" -o output-file`
+`python siegma.py -c config/elastic/elastic-siem.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.author=none,credentials.kibana_url="www.example.com",credentials.kibana_username="bfd" -o output-file`
 
 # Rules compliance
 

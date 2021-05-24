@@ -19,17 +19,14 @@ How does it differ from `sigmac`? It doesn't. The reason we decided to create ou
 
 We'll run the software and install dependencies, for both this project as well as Sigma, under a Python virtual environment. 
       
-`pip3 install virtualenv` 
+`pip3 install pipenv` 
     
 * Setup Sigma
 
 ```
 git clone https://github.com/Neo23x0/sigma
 cd sigma
-python3 -m virtualenv .venv3
-. .venv3/bin/activate
-cd tools
-pip install -r requirements.txt --ignore-installed --no-cache-dir
+pipenv install --skip-lock
 ```
 
 * Setup SIEGMA
@@ -37,9 +34,7 @@ pip install -r requirements.txt --ignore-installed --no-cache-dir
 ```
 git clone https://github.com/3CORESec/SIEGMA
 cd SIEGMA
-python3 -m virtualenv .venv3
-. .venv3/bin/activate
-pip install -r requirements.txt --ignore-installed --no-cache-dir
+pipenv install
 ```
 
 *Note for Windows users*: Powershell must be enabled for command and script execution. Open `Administrative Powershell` and execute following command: `Set-ExecutionPolicy Bypass` 
@@ -54,7 +49,7 @@ Invoke the script by providing it a Sigma rule or Sigma rule folder as well as t
 
 Activate the virtual environment:
  
-`. .venv3/bin/activate`
+`pipenv shell`
    
 It is recommended to consult the `siegma.py` help, especially for advanced usage instructions:
  

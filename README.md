@@ -103,7 +103,8 @@ Want to know more how it all comes together or want to contribute support for a 
 ## Roadmap
 
 - Additional platform/SIEM support
-  - Splunk is currently in development
+  - Sentinel (To be developed)
+  - Splunk (To be developed)
 - ~~Enable use of sigma backend options~~
 - ~~Override siegma config from the commandline~~
 - ~~Functionality to create aggregate rules in Elastic/Kibana using `es-qs` as backend~~

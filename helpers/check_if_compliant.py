@@ -138,6 +138,7 @@ def main():
             start = parsing(dir=dir)
             start.firstParsing(folders)
         # pprint(folders)
+    print('Ending script with exit status {}'.format(exit_status_value))
     sys.exit(exit_status_value)
 
 

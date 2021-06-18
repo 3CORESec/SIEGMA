@@ -423,7 +423,7 @@ def add_new_items_to_config(shared_config, rule_config, logger):
 
 
 def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
-    logger.info('Starting create_es_qs_rule()...')
+    logger.info('Starting create_rule()...')
     rule_file = None
     try:
         logger.debug(config)

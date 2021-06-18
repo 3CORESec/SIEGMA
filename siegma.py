@@ -8,7 +8,7 @@ import subprocess
 import collections
 from pyattck import Attck
 from pprint import pprint
-from rule_file_creator_scripts import es_qs
+from rule_file_creator_scripts import es_qs, ala_rule
 from helpers.utils import setup_logger, config_file_to_dict, get_slash_set_path, get_slashes
 
 
@@ -131,6 +131,9 @@ def create_rule_file_for_siem(siegma_config, notes_folder, sigma_query_format, s
 	sigma_config = load_yaml_rule_into_json(sigma_config)
 	if sigma_query_format in ['es-qs']:
 		rule_file = es_qs.create_rule(siegma_config, notes_folder, config_copy, sigma_config, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
+	elif sigma_query_format in ['ala-rule']:
+		rule_file = ala_rule.create_rule(siegma_config, notes_folder, config_copy, sigma_config, credentials, json.loads(query), yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
+	else: pass
 	return rule_file
 
 

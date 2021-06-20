@@ -234,29 +234,41 @@ def get_mitre_ttps(attack, yj_rule, logger):
 
 def valid_credentials(credentials, logger):
     ret = False
-    creds_exist = username_exist = password_exist = url_exist = False
+    creds_exist = azure_key_exist = client_id_exist = tenant_id_exist = client_secret_exist = subscription_id_exist = resource_group_exist = False
     if credentials and credentials is not None:
         creds_exist = True
         logger.debug('Credentials key exists...')
         logger.debug('Checking further...')
-        if 'kibana_username' in credentials:
-            if credentials.get('kibana_username') and credentials.get('kibana_username') != '':
-                username_exist = True
-                logger.debug('Kibana_username exists...')
-        if 'kibana_password' in credentials:
-            if credentials.get('kibana_password') and credentials.get('kibana_password') != '':
-                password_exist = True
-                logger.debug('kibana_password exists...')
-        if 'kibana_url' in credentials:
-            if credentials.get('kibana_url') and credentials.get('kibana_url') != '':
-                url_exist = True
-                logger.debug('kibana_url exists...')
-    if creds_exist and username_exist and password_exist and url_exist:
+        if 'azure' in credentials:
+            azure_key_exist = True
+            logger.debug('Azure key exists...')
+            logger.debug('Checking further...')
+            if 'client_id' in credentials.get('azure'):
+                if credentials.get('azure').get('client_id') and credentials.get('azure').get('client_id') != '':
+                    client_id_exist = True
+                    logger.debug('client_id exists...')
+            if 'client_secret' in credentials.get('azure'):
+                if credentials.get('azure').get('client_secret') and credentials.get('azure').get('client_secret') != '':
+                    client_secret_exist = True
+                    logger.debug('client_secret exists...')
+            if 'tenant_id' in credentials.get('azure'):
+                if credentials.get('azure').get('tenant_id') and credentials.get('azure').get('tenant_id') != '':
+                    tenant_id_exist = True
+                    logger.debug('tenant_id exists...')
+            if 'subscription_id' in credentials.get('azure'):
+                if credentials.get('azure').get('subscription_id') and credentials.get('azure').get('subscription_id') != '':
+                    subscription_id_exist = True
+                    logger.debug('subscription_id exists...')
+            if 'resource_group' in credentials.get('azure'):
+                if credentials.get('azure').get('resource_group') and credentials.get('azure').get('resource_group') != '':
+                    resource_group_exist = True
+                    logger.debug('resource_group exists...')
+    if creds_exist and azure_key_exist and client_id_exist and tenant_id_exist and client_secret_exist and subscription_id_exist and resource_group_exist:
         ret = True
-        logger.info('Existing creds found. Output file shall be uploaded to ELK...')
+        logger.info('Existing creds found. Output file shall be uploaded to Azure...')
     else:
         ret = False
-        logger.info('No creds found. Output file shall not be uploaded to ELK...')
+        logger.info('No creds found. Output file shall not be uploaded to Azure...')
     return ret
 
 

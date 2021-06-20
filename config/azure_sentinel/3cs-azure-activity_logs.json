@@ -1,0 +1,14 @@
+{
+    "sigma_query_format": "ala-rule",
+    "sigma_params": {},
+    "notes_folder": "..\\3cs-int-sigma\\notes",
+    "settings": {
+        "kind": "Scheduled",
+        "queryPeriod":"15M",
+        "queryFrequency":"5M",
+        "triggerOperator": "GreaterThan",
+        "triggerThreshold": 0,
+        "suppressionDuration": "1H",
+        "suppressionEnabled": false
+    }
+}

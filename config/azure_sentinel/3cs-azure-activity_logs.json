@@ -1,6 +1,15 @@
 {
     "sigma_query_format": "ala-rule",
     "sigma_params": {},
+    "credentials": {
+        "azure": {
+            "client_id": "",
+            "client_secret": "",
+            "tenant_id": "",
+            "subscription_id": "",
+            "resource_group": ""
+        }
+    },
     "notes_folder": "..\\3cs-int-sigma\\notes",
     "settings": {
         "kind": "Scheduled",

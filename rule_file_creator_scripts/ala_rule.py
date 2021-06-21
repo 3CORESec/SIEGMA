@@ -441,7 +441,16 @@ def add_new_items_to_config(shared_config, rule_config, logger):
 #     else: ret = c.get(c_key)
 #     return ret
 
-    
+
+def get_azure_severity(severity):
+    ret = None
+    allowed_severity = ['high', 'medium', 'low', 'informational']
+    if severity.lower() in allowed_severity:
+        ret = severity
+    elif severity.lower() == 'critical':
+        ret = 'high'
+    else: ret = 'informational'
+    return ret
 
 
 def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
@@ -469,6 +478,8 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         # query['query'] = query['query'].replace('\"', "'")
         # query['query'] = query['query'].replace('(', "")
         # query['query'] = query['query'].replace(')', "")
+        # set severity
+        query['severity'] = get_azure_severity(query['severity'])
         # set queryPeriod
         query['queryPeriod'] = config.get('queryPeriod')
         # set queryFrequency

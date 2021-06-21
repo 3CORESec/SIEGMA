@@ -2,6 +2,7 @@ import os
 import re
 import copy
 import json
+import requests
 import subprocess
 from pprint import pprint
 from helpers.utils import get_slash_set_path, get_slashes
@@ -36,7 +37,7 @@ def get_author_name(yj_rule, config, logger):
     return ret
 
 
-def dump_to_file(dictionary, output='.output.ndjson'):
+def dump_to_file(dictionary, output='.output.azure.txt'):
     try:
         with open(output, "a") as outfile:
             json.dump(dictionary, outfile)
@@ -234,36 +235,32 @@ def get_mitre_ttps(attack, yj_rule, logger):
 
 def valid_credentials(credentials, logger):
     ret = False
-    creds_exist = azure_key_exist = client_id_exist = tenant_id_exist = client_secret_exist = subscription_id_exist = resource_group_exist = False
+    creds_exist = client_id_exist = tenant_id_exist = client_secret_exist = subscription_id_exist = resource_group_exist = False
     if credentials and credentials is not None:
         creds_exist = True
         logger.debug('Credentials key exists...')
         logger.debug('Checking further...')
-        if 'azure' in credentials:
-            azure_key_exist = True
-            logger.debug('Azure key exists...')
-            logger.debug('Checking further...')
-            if 'client_id' in credentials.get('azure'):
-                if credentials.get('azure').get('client_id') and credentials.get('azure').get('client_id') != '':
-                    client_id_exist = True
-                    logger.debug('client_id exists...')
-            if 'client_secret' in credentials.get('azure'):
-                if credentials.get('azure').get('client_secret') and credentials.get('azure').get('client_secret') != '':
-                    client_secret_exist = True
-                    logger.debug('client_secret exists...')
-            if 'tenant_id' in credentials.get('azure'):
-                if credentials.get('azure').get('tenant_id') and credentials.get('azure').get('tenant_id') != '':
-                    tenant_id_exist = True
-                    logger.debug('tenant_id exists...')
-            if 'subscription_id' in credentials.get('azure'):
-                if credentials.get('azure').get('subscription_id') and credentials.get('azure').get('subscription_id') != '':
-                    subscription_id_exist = True
-                    logger.debug('subscription_id exists...')
-            if 'resource_group' in credentials.get('azure'):
-                if credentials.get('azure').get('resource_group') and credentials.get('azure').get('resource_group') != '':
-                    resource_group_exist = True
-                    logger.debug('resource_group exists...')
-    if creds_exist and azure_key_exist and client_id_exist and tenant_id_exist and client_secret_exist and subscription_id_exist and resource_group_exist:
+        if 'azure_client_id' in credentials:
+            if credentials.get('azure_client_id') and credentials.get('azure_client_id') != '':
+                client_id_exist = True
+                logger.debug('client_id exists...')
+        if 'azure_client_secret' in credentials:
+            if credentials.get('azure_client_secret') and credentials.get('azure_client_secret') != '':
+                client_secret_exist = True
+                logger.debug('client_secret exists...')
+        if 'azure_tenant_id' in credentials:
+            if credentials.get('azure_tenant_id') and credentials.get('azure_tenant_id') != '':
+                tenant_id_exist = True
+                logger.debug('tenant_id exists...')
+        if 'azure_subscription_id' in credentials:
+            if credentials.get('azure_subscription_id') and credentials.get('azure_subscription_id') != '':
+                subscription_id_exist = True
+                logger.debug('subscription_id exists...')
+        if 'azure_resource_group' in credentials:
+            if credentials.get('azure_resource_group') and credentials.get('azure_resource_group') != '':
+                resource_group_exist = True
+                logger.debug('resource_group exists...')
+    if creds_exist and client_id_exist and tenant_id_exist and client_secret_exist and subscription_id_exist and resource_group_exist:
         ret = True
         logger.info('Existing creds found. Output file shall be uploaded to Azure...')
     else:
@@ -274,10 +271,35 @@ def valid_credentials(credentials, logger):
 
 def handle_response_errors(status_code, message, logger):
     if status_code == 400 and 'invalid file extension'.lower() in message.lower():
-        logger.error('Use .ndjson as the file extension for output file...')
+        logger.error('Use .azure.txt as the file extension for output file...')
+
+
+def get_access_token(credentials, logger):
+    token = None
+    url = "https://login.microsoftonline.com/{}/oauth2/token".format(credentials.get('azure_tenant_id'))
+
+    payload='grant_type=client_credentials&client_id={}&client_secret={}&resource=https%3A%2F%2Fmanagement.azure.com%2F'.format(credentials.get('azure_client_id'), credentials.get('azure_client_secret'))
+    # headers = {
+    #     'Content-Type': 'application/x-www-form-urlencoded',
+    #     'Cookie': 'fpc=AqQZYV-ZmzxNuM0xabApxT4ac0cgAQAAAGqGVNgOAAAA'
+    # }
+
+    # response = requests.request("POST", url, headers=headers, data=payload)
+
+    response = requests.request("POST", url, data=payload)
+
+    logger.debug('creds response:')
+    logger.debug(response.text)
+    # pprint(response.json())
+    # input('Here')
+
+    token = response.json().get('access_token')
+
+    return token
 
 
 def install_rules(script_dir, credentials, rule_file, logger):
+    token = get_access_token(credentials, logger)
     return_status = 0
     # if windows, execute these commands
     curl_path = get_slash_set_path(script_dir + '/helpers/curl/curl.exe')
@@ -287,7 +309,7 @@ def install_rules(script_dir, credentials, rule_file, logger):
     query = None
     # if windows machine
     if os.name == 'nt':
-        command = 'powershell -nop -c \"{} {};\"'.format(curl_path, "-X POST \"{}/api/detection_engine/rules/_import?overwrite=true\" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form 'file=@{}'".format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file))
+        command = 'powershell -nop -c \"{} {};\"'.format(curl_path, "-X PUT \"{}/api/detection_engine/rules/_import?overwrite=true\" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form 'file=@{}'".format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file))
         logger.debug('Command: {}'.format(command))
         logger.info('Windows powershell command shall be executed...')
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)

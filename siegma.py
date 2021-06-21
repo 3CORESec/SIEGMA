@@ -371,7 +371,7 @@ def main():
 		if (not ((args.config.get('sigma_query_format') == 'ala-rule'))):
 			# backends that support bulk/multiple rules installation at the same time
 			if (not args.testing) and (args.config.get('sigma_query_format') == 'es-qs'):
-				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
+				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name, '')
 				quit_script_with_error_if_failed(return_status)
 			else:
 				logger.info('No rules installed on SIEM since Testing switch is enabled...')

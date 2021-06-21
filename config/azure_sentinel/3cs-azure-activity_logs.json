@@ -11,11 +11,11 @@
     "notes_folder": "..\\3cs-int-sigma\\notes",
     "settings": {
         "kind": "Scheduled",
-        "queryPeriod":"15M",
-        "queryFrequency":"5M",
+        "queryPeriod":"PT15M",
+        "queryFrequency":"PT5M",
         "triggerOperator": "GreaterThan",
         "triggerThreshold": 0,
-        "suppressionDuration": "1H",
+        "suppressionDuration": "PT1H",
         "suppressionEnabled": false
     }
 }

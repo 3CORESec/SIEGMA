@@ -8,7 +8,7 @@
         "azure_subscription_id": "",
         "azure_resource_group": ""
     },
-    "notes_folder": "..\\3cs-int-sigma\\notes",
+    "notes_folder": "..\\notes",
     "settings": {
         "kind": "Scheduled",
         "queryPeriod":"PT15M",

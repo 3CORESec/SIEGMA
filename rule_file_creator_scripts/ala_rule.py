@@ -39,7 +39,7 @@ def get_author_name(yj_rule, config, logger):
 
 def dump_to_file(dictionary, output='.output.azure.txt'):
     try:
-        with open(output, "a") as outfile:
+        with open(output, "w") as outfile:
             json.dump(dictionary, outfile)
             outfile.write('\n')
     except Exception as e:
@@ -290,67 +290,46 @@ def get_access_token(credentials, logger):
 
     logger.debug('creds response:')
     logger.debug(response.text)
-    # pprint(response.json())
-    # input('Here')
+    pprint(response.json())
+    logger.debug('status code: {}'.format(response.status_code))
 
     token = response.json().get('access_token')
 
     return token
 
 
-def install_rules(script_dir, credentials, rule_file, logger):
-    token = get_access_token(credentials, logger)
+def install_rules(script_dir, credentials, rule_file, yj_rule, logger):
     return_status = 0
-    # if windows, execute these commands
-    curl_path = get_slash_set_path(script_dir + '/helpers/curl/curl.exe')
-    logger.debug('Script Dir: {}'.format(curl_path))
-    logger.debug('Rule Output File: {}'.format(rule_file))
-    result = result_out = None
-    query = None
-    # if windows machine
-    if os.name == 'nt':
-        command = 'powershell -nop -c \"{} {};\"'.format(curl_path, "-X PUT \"{}/api/detection_engine/rules/_import?overwrite=true\" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form 'file=@{}'".format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file))
-        logger.debug('Command: {}'.format(command))
-        logger.info('Windows powershell command shall be executed...')
-        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-        result_out = json.loads(result.stdout.decode('utf-8'))
-        result_error = result.stderr.decode('utf-8')
-        # if error code var is not empty, then set return status to 1
-        if result.returncode != 0: return_status = 1
-        logger.debug(result_out)
-        logger.error(result_error)
-    # if linux machine
+    token = None
+    token = get_access_token(credentials, logger)
+    if token is None:
+        return_status = 1
     else:
-        command = """curl -X POST "{}/api/detection_engine/rules/_import?overwrite=true" -u '{}:{}' -H 'kbn-xsrf: true' -H 'Content-Type: multipart/form-data' --form "file=@{}" """.format(credentials.get('kibana_url'), credentials.get('kibana_username'), credentials.get('kibana_password'), rule_file)
-        logger.debug('Command: {}'.format(command))
-        logger.info('Linux shell shall be executed...')
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-        proc_stdout = process.communicate()[0].strip().decode('utf-8')
-        print(proc_stdout)
-        result_out = json.loads(proc_stdout)
-        result_error = process.returncode
-        # if error code var is not empty, then set return status to 1
-        if result_error != 0: return_status = 1
-        logger.debug(result_out)
-    logger.info('Import Successful: {}...'.format(result_out.get('success')))
-    # if elasticsearch output var is not empty, then set return status to 1
-    if result_out.get('success') != True:
-        return_status = 1
-    logger.info('Count Successfully Imported Rules: {}...'.format(result_out.get('success_count')))
-    # if elasticsearch output var is not empty, then set return status to 1
-    if result_out.get('success_count') <= 0:
-        return_status = 1
-    logger.info('Import Errors: {}...'.format(result_out.get('errors')))
-    # if elasticsearch output var is not empty, then set return status to 1
-    if len(result_out.get('errors')) > 0:
-        return_status = 1
-    logger.info('Response Message: {}...'.format(result_out.get('message')))
-    logger.info('Response status code: {}...'.format(result_out.get('status_code')))
-    # if elasticsearch output var is not empty, then set return status to 1
-    if result_out.get('status_code') != None:
-        return_status = 1
-    handle_response_errors(result_out.get('status_code'), result_out.get('message'), logger)
-    return return_status, query
+        # rule_file_json = json.load(open(rule_file))
+
+        url = "https://management.azure.com/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.OperationalInsights/workspaces/{1}/providers/Microsoft.SecurityInsights/alertRules/{2}?api-version=2020-01-01".format(credentials.get('azure_subscription_id'), credentials.get('azure_resource_group'), yj_rule.get('id'))
+
+        payload = json.dumps(json.load(open(rule_file)))
+        headers = {
+            'Authorization': 'Bearer {}'.format(token),
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("PUT", url, headers=headers, data=payload)
+
+        logger.debug('rule import response:')
+        logger.debug(response.text)
+        pprint(response.json())
+        logger.debug('status code: {}'.format(response.status_code))
+
+        if response.status_code >= 200 and response.status_code <= 299:
+            return_status = 0
+            logger.info('Rule {} successfully installed on Azure Sentinel...'.format(yj_rule.get('id')))
+        else:
+            return_status = 1
+            logger.error('Rule {} could not be installed on Azure Sentinel...'.format(yj_rule.get('id')))
+
+    return return_status
 
 
 def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
@@ -485,6 +464,11 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         # query['suppressionDuration'] = ''
         # query['suppressionEnabled'] = ''
 
+
+        # set query quotes
+        # query['query'] = query['query'].replace('\"', "'")
+        # query['query'] = query['query'].replace('(', "")
+        # query['query'] = query['query'].replace(')', "")
         # set queryPeriod
         query['queryPeriod'] = config.get('queryPeriod')
         # set queryFrequency

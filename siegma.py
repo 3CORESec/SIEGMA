@@ -211,11 +211,16 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 	return sigma_extra_params
 
 
-def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name):
+def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name, rule):
 	return_status = 0
 	if sigma_query_format in ['es-qs']:
 		if es_qs.valid_credentials(credentials, logger):
 			return_status, query = es_qs.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, logger)
+		else:
+			return_status = 1
+	elif sigma_query_format in ['ala-rule']:
+		if ala_rule.valid_credentials(credentials, logger):
+			return_status = ala_rule.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, load_yaml_rule_into_json(rule), logger)
 		else:
 			return_status = 1
 	return return_status
@@ -355,12 +360,22 @@ def main():
 			out_file_name = create_rule_file_for_siem(args.config, args.config.get('notes_folder'), args.config.get('sigma_query_format'), args.sigma_config, args.config.get('settings'), args.config.get('credentials'), query, rule, args.output, testing=args.testing)
 			logger.info('Output file name: {}...'.format(out_file_name))
 			quit_script_with_error_if_failed(return_status)
-		if not args.testing:
-			return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
-			quit_script_with_error_if_failed(return_status)
-		else:
-			logger.info('No rules installed on SIEM since Testing switch is enabled...')
+			# backends that only support single rule installation at a time
+			if (not args.testing) and (args.config.get('sigma_query_format') == 'ala-rule'):
+				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name, rule)
+				quit_script_with_error_if_failed(return_status)
+			else:
+				logger.info('No rules installed on SIEM since Testing switch is enabled...')
 		quit_script_with_error_if_failed(return_status)
+		# ignore code section for backend targets that only support single rule installation at a time
+		if (not ((args.config.get('sigma_query_format') == 'ala-rule'))):
+			# backends that support bulk/multiple rules installation at the same time
+			if (not args.testing) and (args.config.get('sigma_query_format') == 'es-qs'):
+				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name)
+				quit_script_with_error_if_failed(return_status)
+			else:
+				logger.info('No rules installed on SIEM since Testing switch is enabled...')
+			quit_script_with_error_if_failed(return_status)
 	except Exception as e:
 		logger.error('Exception {} occurred in main of file {}...'.format(e, os.path.basename(__file__)))
 		quit_script_with_error_if_failed(1)

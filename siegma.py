@@ -340,7 +340,7 @@ def main():
 	try:
 		initialize_g_vars()
 		empty_output_file(output=args.output)
-		out_file_name = ''
+		out_file_name = '' if args.output is None else args.output
 		return_status = 0
 
 		# rule compliance check

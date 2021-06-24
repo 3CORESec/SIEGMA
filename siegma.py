@@ -341,6 +341,7 @@ def main():
 		initialize_g_vars()
 		empty_output_file(output=args.output)
 		out_file_name = '' if args.output is None else args.output
+		logger.info('Output file: {}...'.format(out_file_name))
 		return_status = 0
 
 		# rule compliance check

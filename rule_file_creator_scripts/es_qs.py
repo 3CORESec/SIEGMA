@@ -41,8 +41,9 @@ def dump_to_file(dictionary, output='.output.ndjson'):
         with open(output, "a") as outfile:
             json.dump(dictionary, outfile)
             outfile.write('\n')
+            print('dict dumped to file {}'.format(output))
     except Exception as e:
-        print(f"Exception {e} occurred in dump_to_file()...")
+        print("Exception {} occurred in dump_to_file()...".format(e))
     return output
 
 

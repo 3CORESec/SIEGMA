@@ -74,7 +74,8 @@ def is_technique(attack, item):
     if len(match_list) > 0:
         print(match_list)
         is_technique_boolean = True
-        technique = get_technique_from_mitre(attack, item.replace('attack.', ''))
+        technique = attack.get_technique_from_id(item)
+        # technique = get_technique_from_mitre(attack, item.replace('attack.', ''))
         # if technique: is_technique_boolean = True
     print('technique item {} data:'.format(item))
     pprint(technique)
@@ -135,9 +136,14 @@ def is_tactic(attack, item):
     if item.count('.') > 1: match_list = []
     # print(match_list)
     if len(match_list) > 0:
-        # print(match_list)
+        print(match_list)
         is_tactic_boolean = True
-        tactic = get_tactic_from_mitre(attack, item.replace('attack.', '').replace('_', ' '))
+        # print('up')
+        # input('')
+        tactic = attack.get_tactic_from_name(item)    
+        #     tactic = get_tactic_from_mitre(attack, item.replace('attack.', '').replace('_', ' '))
+        # print('down')
+        # input('')
     print('tactic item {} data:'.format(item))
     pprint(tactic)
     return is_tactic_boolean, tactic
@@ -171,7 +177,8 @@ def is_subtechnique(attack, item):
     if len(match_list) > 0:
         # print(match_list)
         is_subtechnique_boolean = True
-        subtechnique = get_subtechnique_from_mitre(attack, item.replace('attack.', ''))
+        subtechnique = attack.get_technique_from_id(item)
+        # subtechnique = get_subtechnique_from_mitre(attack, item.replace('attack.', ''))
     return is_subtechnique_boolean, subtechnique
 
 

@@ -494,16 +494,16 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         
         ######### description updates ##########################
         # merge author in description
-        query['description'] += '\n\n# Author:\n\n' + list_to_str(yj_rule.get('author'), logger)
+        query['description'] += '' if yj_rule.get('author') is None else '\n\n# Author:\n\n' + list_to_str(yj_rule.get('author'), logger)
         # merge falsepositives in tags
-        query['description'] += '\n\n# MITRE ATT&CK Tags:\n\n' + list_to_str(yj_rule.get('tags'), logger)
+        query['description'] += '' if yj_rule.get('tags') is None else '\n\n# MITRE ATT&CK Tags:\n\n' + list_to_str(yj_rule.get('tags'), logger)
         # merge notes in description
         # query['description'] += '\n\nADS/Notes:\n\n' + get_notes(notes_folder, config.get('note'), yj_rule.get('note'), logger)
-        query['description'] += '\n\n# ADS/Notes:\n\n' + get_notes(notes_folder, yj_rule.get('note'), logger)
-        # merge references in description
-        query['description'] += '\n\n# References:\n\n' + list_to_str(yj_rule.get('references'), logger)
+        query['description'] += '' if yj_rule.get('note') is None else '\n\n# ADS/Notes:\n\n' + get_notes(notes_folder, yj_rule.get('note'), logger)
         # merge falsepositives in description
-        query['description'] += '\n\n# False Positives:\n\n' + list_to_str(yj_rule.get('falsepositives'), logger)
+        query['description'] += '' if yj_rule.get('falsepositives') is None else '\n\n# False Positives:\n\n' + list_to_str(yj_rule.get('falsepositives'), logger)
+        # merge references in description
+        query['description'] += '' if yj_rule.get('references') is None else '\n\n# References:\n\n' + list_to_str(yj_rule.get('references'), logger)
         ####################################################
 
         rule_content = {

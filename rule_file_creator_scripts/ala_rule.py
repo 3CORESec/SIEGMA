@@ -8,32 +8,9 @@ from pprint import pprint
 from helpers.utils import get_slash_set_path, get_slashes
 
 
-def get_author_name_s2(val):
-    '''
-    Sub function of author name that performs several checks before finalizing the author name
-    '''
+def get_author_name(query_d, yj_rule_d, logger):
     ret = None
-    if type(val) == list:
-        ret = val
-    elif type(val) == str:
-        ret = [val]
-    else: ret = list(val)
-    return ret
-
-
-def get_author_name(yj_rule, config, logger):
-    ret = None
-    already_done = False
-    if not already_done:
-        ret = get_author_name_s2(yj_rule)
-        if ret is not None: 
-            already_done = True
-            logger.debug(f'Author {ret} name set from rule...')
-    if not already_done: 
-        ret = get_author_name_s2(config)
-        if ret is not None: 
-            already_done = True
-            logger.debug(f'Author {ret} name set from config...')
+    ret = query_d.replace(' by {}'.format(str(yj_rule_d)), '')
     return ret
 
 
@@ -384,25 +361,26 @@ def rate_based_rule_settings(sigma_config, config, config_t, yj_rule_t, logger):
     return config
 
 
-def get_notes(notes_folder, config_n, yj_rule_n, logger):
+# def get_notes(notes_folder, config_n, yj_rule_n, logger):
+def get_notes(notes_folder, yj_rule_n, logger):
     ret = ''
     file_name = ''
-    if type(config_n) == str and config_n != "": 
-        config_n = [config_n]
-    config_n = [get_slash_set_path(i) for i in config_n]
-    if type(yj_rule_n) == str and yj_rule_n != "": 
-        yj_rule_n = [yj_rule_n]
-        yj_rule_n = [get_slash_set_path(i) for i in yj_rule_n]
-    update_required = False
     try:
+        # if type(config_n) == str and config_n != "": 
+        #     config_n = [config_n]
+        # config_n = [get_slash_set_path(i) for i in config_n]
+        if type(yj_rule_n) == str and yj_rule_n != "": 
+            yj_rule_n = [yj_rule_n]
+            yj_rule_n = [get_slash_set_path(i) for i in yj_rule_n]
+        update_required = False
         if (not update_required) and yj_rule_n and type(yj_rule_n) == list and len(yj_rule_n) > 0:
             file_name = yj_rule_n
             update_required = True
             logger.debug('File name set from rule...')
-        elif (not update_required) and config_n and type(config_n) == list and len(config_n) > 0:
-            file_name = config_n
-            update_required = True
-            logger.debug('File name set from config...')
+        # elif (not update_required) and config_n and type(config_n) == list and len(config_n) > 0:
+        #     file_name = config_n
+        #     update_required = True
+        #     logger.debug('File name set from config...')
         else: logger.debug('File name not set...')
         if update_required:
             # add forward/back slash to end of folder name
@@ -454,6 +432,23 @@ def get_azure_severity(severity):
     return ret
 
 
+def list_to_str(item, logger):
+    ret = None
+    try:
+        if type(item) == list:
+            logger.debug('{} is a list...'.format(item))
+            ret = '\n'.join(item)
+        elif type(item) == str:
+            logger.debug('{} is an str...'.format(item))
+            ret = item
+        else:
+            logger.debug('{} is an unknown type...'.format(item))
+            ret = item
+    except Exception as e:
+        logger.error('Exception {} occurred in list_to_str()...'.format(e))
+    return ret
+
+
 def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_rule()...')
     rule_file = None
@@ -493,6 +488,23 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         query['suppressionDuration'] = config.get('suppressionDuration')
         # set suppressionEnabled
         query['suppressionEnabled'] = config.get('suppressionEnabled')
+
+        # update displayName
+        query['displayName'] = get_author_name(query['displayName'], yj_rule.get('author'), logger)
+        
+        ######### description updates ##########################
+        # merge author in description
+        query['description'] += '\n\n# Author:\n\n' + list_to_str(yj_rule.get('author'), logger)
+        # merge falsepositives in tags
+        query['description'] += '\n\n# MITRE ATT&CK Tags:\n\n' + list_to_str(yj_rule.get('tags'), logger)
+        # merge notes in description
+        # query['description'] += '\n\nADS/Notes:\n\n' + get_notes(notes_folder, config.get('note'), yj_rule.get('note'), logger)
+        query['description'] += '\n\n# ADS/Notes:\n\n' + get_notes(notes_folder, yj_rule.get('note'), logger)
+        # merge references in description
+        query['description'] += '\n\n# References:\n\n' + list_to_str(yj_rule.get('references'), logger)
+        # merge falsepositives in description
+        query['description'] += '\n\n# False Positives:\n\n' + list_to_str(yj_rule.get('falsepositives'), logger)
+        ####################################################
 
         rule_content = {
                 'kind': config.get('kind'),

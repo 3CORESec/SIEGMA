@@ -103,7 +103,8 @@ Want to know more how it all comes together or want to contribute support for a 
 ## Roadmap
 
 - Additional platform/SIEM support
-  - Sentinel (To be developed)
+  - ~~Elastic SIEM~~
+  - ~~Azure Sentinel~~
   - Splunk (To be developed)
 - ~~Enable use of sigma backend options~~
 - ~~Override siegma config from the commandline~~

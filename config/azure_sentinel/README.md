@@ -8,9 +8,27 @@ This folder holds the configuration file for the SIEM platform in question. All 
 
 ## Example use cases of SIEGMA
 
-### Generate a Sentinel SIEM output from a single Sigma rule file
+### Generate an Azure Sentinel SIEM output from a single Azure Activity Logs Sigma rule file
 
-TODO
+`python siegma.py -c config/azure_sentinel/azure-activity_logs.json -r /path/to/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file.yml -o rule-output`
+
+### Generate an Azure Sentinel SIEM output from a folder with several Azure Activity logs Sigma rule files
+
+`python siegma.py -c config/azure_sentinel/azure-activity_logs.json -r /path/to/folder/with/sigma-rules/ -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
+
+### Generate an Azure Sentinel SIEM output from a Azure AD Audit logs rule file and also pass Sigma backend options
+
+In this example we will utilize -sep to request SIEGMA to use the advanced Sigma backend options that would be defined in the Azure Sentinel config
+
+`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
+
+### Generate an Azure Sentinel SIEM output from an Azure AD Audit logs rule file and also override azure-ad_audit_logs.json config from commandline
+
+In this example we will utilize the Azure Sentinel config fields as they are defined (or supplied from the Sigma rule) while overwriting certain fields through the usage of -co. This is particularly useful if converting Sigma rules for which you'd like to apply different SIEM consumable fields.
+
+The example below will overwrite the `settings.queryPeriod`, `credentials.azure_client_id`, `credentials.azure_client_secret`, `credentials.azure_tenant_id`, `credentials.azure_subscription_id` and `credentials.azure_resource_group`.
+
+`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.queryPeriod=PT20M,credentials.azure_client_id="client_id",credentials.azure_client_secret="secret",credentials.azure_tenant_id="tenant_id",credentials.azure_subscription_id="00000000-0000-0000-0000-000000000000",credentials.azure_resource_group="rg" -o output-file`
 
 ## Fields that are worth looking into to adapt to your particular use case
 

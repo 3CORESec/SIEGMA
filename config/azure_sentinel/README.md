@@ -58,6 +58,7 @@ The example below will overwrite the `settings.queryPeriod`, `credentials.azure_
 
 ## Automatic upload
 
-TODO
+If you'd like to enable automatic upload of consumables into your SIEM, please enter your environment variables in the [config files](.) or specify them through `-co` as shown below.
+Below is an example of Azure AD Audit logs Sigma rule being uploaded to Azure Sentinel SIEM via a service principal credentials.
 
-If you'd like to enable automatic upload of consumables into your SIEM, please enter your environment variables in the [config files](.) or specify them through `-co` as previously shown.
+`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co credentials.azure_client_id="client_id",credentials.azure_client_secret="secret",credentials.azure_tenant_id="tenant_id",credentials.azure_subscription_id="00000000-0000-0000-0000-000000000000",credentials.azure_resource_group="rg" -o output-file`

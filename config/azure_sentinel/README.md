@@ -42,4 +42,4 @@ TODO
 
 TODO
 
-If you'd like to enable automatic upload of consumables into your SIEM, please enter your environment variables in the config files or specify them through `-co` as previously shown.
+If you'd like to enable automatic upload of consumables into your SIEM, please enter your environment variables in the [config files](../) or specify them through `-co` as previously shown.

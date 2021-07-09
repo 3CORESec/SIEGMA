@@ -4,4 +4,3 @@ pyfiglet
 requests
 colorlog
 PyYAML
-https://github.com/swimlane/pyattck/archive/master.zip

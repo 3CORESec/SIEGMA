@@ -4,13 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-colorlog = "*"
-pyattck = {file = "https://github.com/swimlane/pyattck/archive/master.zip"}
-PyYAML = "*"
-requests = "*"
 pendulum = "*"
-pillow = "*"
 pyfiglet = "*"
+requests = "*"
+colorlog = "*"
+Pillow = "*"
+PyYAML = "*"
 
 [dev-packages]
 

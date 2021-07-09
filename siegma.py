@@ -6,7 +6,6 @@ import yaml
 import argparse
 import subprocess
 import collections
-# from pyattck import Attck
 from pprint import pprint
 from helpers import mitre_attack
 from rule_file_creator_scripts import es_qs, ala_rule
@@ -18,7 +17,6 @@ from helpers.utils import setup_logger, config_file_to_dict, get_slash_set_path,
 logger = None
 args = None
 slash = '/'
-# attack = Attck()
 attack = mitre_attack.MitreAttack()
 #############
 

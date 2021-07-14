@@ -10,17 +10,17 @@ This folder holds the configuration file for the SIEM platform in question. All 
 
 ### Generate an Azure Sentinel SIEM output from a single Azure Activity Logs Sigma rule file
 
-`python siegma.py -c config/azure_sentinel/azure-activity_logs.json -r /path/to/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file.yml -o rule-output`
+`python siegma.py -c config/azure_sentinel/azure-activity_logs.json -r /path/to/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/tools/config/ala-azure-activitylogs.yml -o rule-output`
 
 ### Generate an Azure Sentinel SIEM output from a folder with several Azure Activity logs Sigma rule files
 
-`python siegma.py -c config/azure_sentinel/azure-activity_logs.json -r /path/to/folder/with/sigma-rules/ -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -o rule-output`
+`python siegma.py -c config/azure_sentinel/azure-activity_logs.json -r /path/to/folder/with/sigma-rules/ -s /path/to/sigma/folder -sc /path/to/sigma/tools/config/ala-azure-activitylogs.yml -o rule-output`
 
 ### Generate an Azure Sentinel SIEM output from a Azure AD Audit logs rule file and also pass Sigma backend options
 
 In this example we will utilize -sep to request SIEGMA to use the advanced Sigma backend options that would be defined in the Azure Sentinel config
 
-`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -sep -o output-file`
+`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/tools/config/ala-azure-ad_auditlogs.yml -sep -o output-file`
 
 ### Generate an Azure Sentinel SIEM output from an Azure AD Audit logs rule file and also override azure-ad_audit_logs.json config from commandline
 
@@ -28,7 +28,7 @@ In this example we will utilize the Azure Sentinel config fields as they are def
 
 The example below will overwrite the `settings.queryPeriod`, `credentials.azure_client_id`, `credentials.azure_client_secret`, `credentials.azure_tenant_id`, `credentials.azure_subscription_id` and `credentials.azure_resource_group`.
 
-`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co settings.queryPeriod=PT20M,credentials.azure_client_id="client_id",credentials.azure_client_secret="secret",credentials.azure_tenant_id="tenant_id",credentials.azure_subscription_id="00000000-0000-0000-0000-000000000000",credentials.azure_resource_group="rg" -o output-file`
+`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/tools/config/ala-azure-ad_auditlogs.yml -co settings.queryPeriod=PT20M,credentials.azure_client_id="client_id",credentials.azure_client_secret="secret",credentials.azure_tenant_id="tenant_id",credentials.azure_subscription_id="00000000-0000-0000-0000-000000000000",credentials.azure_resource_group="rg" -o output-file`
 
 ## Fields that are worth looking into to adapt to your particular use case
 
@@ -61,4 +61,4 @@ The example below will overwrite the `settings.queryPeriod`, `credentials.azure_
 If you'd like to enable automatic upload of consumables into your SIEM, please enter your environment variables in the [config files](.) or specify them through `-co` as shown below.
 Below is an example of Azure AD Audit logs Sigma rule being uploaded to Azure Sentinel SIEM via a service principal credentials.
 
-`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/config/file/sigma/tools/config/file.yml -co credentials.azure_client_id="client_id",credentials.azure_client_secret="secret",credentials.azure_tenant_id="tenant_id",credentials.azure_subscription_id="00000000-0000-0000-0000-000000000000",credentials.azure_resource_group="rg" -o output-file`
+`python siegma.py -c config/azure_sentinel/azure-ad_audit_logs.json -r /path/to/folder/with/sigma-rules/rule.yml -s /path/to/sigma/folder -sc /path/to/sigma/tools/config/ala-azure-ad_auditlogs.yml -co credentials.azure_client_id="client_id",credentials.azure_client_secret="secret",credentials.azure_tenant_id="tenant_id",credentials.azure_subscription_id="00000000-0000-0000-0000-000000000000",credentials.azure_resource_group="rg" -o output-file`

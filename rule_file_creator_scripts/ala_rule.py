@@ -483,7 +483,7 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         # set triggerOperator
         query['triggerOperator'] = config.get('triggerOperator')
         # set triggerThreshold
-        query['triggerThreshold'] = config.get('triggerThreshold')
+        query['triggerThreshold'] = config.get('triggerThreshold') if 'threshold' not in yj_rule else yj_rule.get('threshold').get('value')
         # set suppressionDuration
         query['suppressionDuration'] = config.get('suppressionDuration')
         # set suppressionEnabled

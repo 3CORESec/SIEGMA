@@ -1,0 +1,21 @@
+{
+    "sigma_query_format": "ala-rule",
+    "sigma_params": {},
+    "credentials": {
+        "azure_client_id": "",
+        "azure_client_secret": "",
+        "azure_tenant_id": "",
+        "azure_subscription_id": "",
+        "azure_resource_group": ""
+    },
+    "notes_folder": "..\\3cs-int-sigma\\notes",
+    "settings": {
+        "kind": "Scheduled",
+        "queryPeriod":"PT14M",
+        "queryFrequency":"PT7M",
+        "triggerOperator": "GreaterThan",
+        "triggerThreshold": 0,
+        "suppressionDuration": "PT1H",
+        "suppressionEnabled": false
+    }
+}

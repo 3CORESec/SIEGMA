@@ -504,6 +504,10 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         query['description'] += '' if yj_rule.get('falsepositives') is None else '\n\n# False Positives:\n\n' + list_to_str(yj_rule.get('falsepositives'), logger)
         # merge references in description
         query['description'] += '' if yj_rule.get('references') is None else '\n\n# References:\n\n' + list_to_str(yj_rule.get('references'), logger)
+        # only take first 5000 chars of description because Sentinel doesn't support more
+        if len(query['description']) > 5000:
+            logger.warn('description length exceeds 5000 for {}. Therefore going to select only first 5000 chars and omitting rest...'.format(query['displayName']))
+            query['description'] = query['description'][:4960] + '\n\nSee rest in original rule.yml file.'
         ####################################################
 
         rule_content = {

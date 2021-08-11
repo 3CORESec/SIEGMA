@@ -81,6 +81,7 @@ def is_technique(attack, item, logger):
     logger.debug(technique)
     return is_technique_boolean, technique
 
+
 def get_technique_from_mitre(attack, technique_id, logger):
     found = False
     logger.debug('Starting get_technique_from_mitre()...')
@@ -239,9 +240,9 @@ def get_mitre_ttps(attack, yj_rule, logger):
             if temp2.get('tactic') != {} and temp2.get('technique') != [] and temp2.get('tactic').get('id') != '':
                 ret.append(temp2)
     except Exception as e:
-        print('Exception {} occurred in get_mitre_ttps()...'.format(e))
+        logger.error('Exception {} occurred in get_mitre_ttps()...'.format(e))
     # pprint(temp)
-    pprint(ret)
+    logger.info(ret)
     return ret
 
 

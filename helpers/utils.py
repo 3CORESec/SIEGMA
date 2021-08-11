@@ -17,7 +17,7 @@ def create_log_file(log_file_name):
 	with open(log_file_name, 'w') as o: pass
 
 
-def get_slash_set_path(path):
+def get_slash_set_path(path, logger):
 	try:
 		slash = '/'
 		if path and path != '':
@@ -27,8 +27,8 @@ def get_slash_set_path(path):
 			else:
 				path = path.replace('\\', slash)
 	except Exception as e:
-		print(f"Exception {e} occurred in get_slash_set_path() for path {path}...")
-	print(f"get_slash_set_path() finished successfully for path {path}...")
+		logger.error(f"Exception {e} occurred in get_slash_set_path() for path {path}...")
+	logger.info(f"get_slash_set_path() finished successfully for path {path}...")
 	return path
 
 

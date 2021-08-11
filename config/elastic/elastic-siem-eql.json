@@ -1,0 +1,41 @@
+{
+    "sigma_query_format": "es-eql",
+    "sigma_params": {
+        "--backend-option": [
+            ""
+        ]
+    },
+    "credentials": {    
+        "kibana_username": "",
+        "kibana_password": "",
+        "kibana_url": ""
+    },
+    "notes_folder": "",
+    "settings": {
+        "rule_id": "",
+        "id": "",
+        "author":[],
+        "from":"now-15m",
+        "index":["*"],
+        "interval":"5m",
+        "language":"eql",
+        "output_index":".siem-signals-default",
+        "references":[],
+        "false_positives":[],
+        "risk_score":0,
+        "name":"",
+        "description":"",
+        "query":"",
+        "severity":"",
+        "tags":[],
+        "to":"now",
+        "type":"eql",
+        "threat":[],
+        "throttle":"no_actions",
+        "threshold": {
+            "field": null,
+            "value": null
+        },
+        "note": ""
+    }
+}

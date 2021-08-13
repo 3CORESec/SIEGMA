@@ -7,8 +7,10 @@ import argparse
 import subprocess
 import collections
 from pprint import pprint
+
+from yaml.loader import SafeLoader
 from helpers import mitre_attack
-from rule_file_creator_scripts import es_qs, ala_rule
+from rule_file_creator_scripts import es_qs, ala_rule, es_eql
 from helpers.utils import setup_logger, config_file_to_dict, get_slash_set_path, get_slashes
 
 
@@ -56,7 +58,8 @@ def initialize_g_vars():
 	args = setup_args()
 	# get siem config
 	args.config = config_file_to_dict(filename=args.config)
-	pprint(args.config)
+	logger.setLevel(args.verbosity)
+	logger.debug(args.config)
 	# get sigma folder path
 	args.sigma = args.sigma if not (args.sigma is None or args.sigma == '') else force_exit('Sigma folder path is required...', exit=1)
 	logger.debug(args.sigma)
@@ -67,7 +70,6 @@ def initialize_g_vars():
 	args.sigma = args.sigma.rstrip('/')
 	args.rule = args.rule.rstrip('\\')
 	args.rule = args.rule.rstrip('/')
-	logger.setLevel(args.verbosity)
 	logger.info('initialize_g_vars() finished successfully...')
 
 
@@ -96,19 +98,20 @@ def get_sigma_query_conversion_result(sigma, sigma_config, sigma_query_format, r
 			if result.returncode != 0: return_status = 1
 			query = result_out.splitlines()[0]
 			logger.debug(query)
-			logger.error(result_error)
+			if return_status == 1:
+				logger.error(result_error)
 		# if linux machine
 		else:
 			logger.info('Linux shell shall be executed...')
 			command = "pipenv run python {0}/tools/sigmac -c {1} -t {2} {4} {3};".format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
 			logger.debug('Command:')
 			logger.debug(command)
-			process = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
+			process = subprocess.Popen(get_slash_set_path(command, logger), stdout=subprocess.PIPE, shell=True)
 			proc_stdout = process.communicate()[0].strip().decode('utf-8')
 			result_error = process.returncode
 			# if error code var is not empty, then set return status to 1
 			if result_error != 0: return_status = 1
-			print(proc_stdout)
+			logger.info(proc_stdout)
 			query = proc_stdout.splitlines()[-1]
 			logger.info(query)
 	except Exception as e:
@@ -119,7 +122,7 @@ def get_sigma_query_conversion_result(sigma, sigma_config, sigma_query_format, r
 
 def load_yaml_rule_into_json(yj_rule):
 	with open(yj_rule) as f:
-		yj_rule = json.loads(json.dumps(yaml.load(f)))
+		yj_rule = json.loads(json.dumps(yaml.load(f, Loader=SafeLoader)))
 	logger.debug(yj_rule)
 	return yj_rule
 
@@ -133,6 +136,8 @@ def create_rule_file_for_siem(siegma_config, notes_folder, sigma_query_format, s
 		rule_file = es_qs.create_rule(siegma_config, notes_folder, config_copy, sigma_config, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
 	elif sigma_query_format in ['ala-rule']:
 		rule_file = ala_rule.create_rule(siegma_config, notes_folder, config_copy, sigma_config, credentials, json.loads(query), yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
+	elif sigma_query_format in ['es-eql']:
+		rule_file = es_eql.create_rule(siegma_config, notes_folder, config_copy, sigma_config, credentials, query, yj_rule, attack, output, os.path.dirname(os.path.realpath(__file__)), logger, testing=testing)
 	else: pass
 	return rule_file
 
@@ -163,7 +168,7 @@ def get_all_rule_files(rule_path):
 	else:
 		ret.append(rule_path)
 	logger.info('Printing {} rules identified: '.format(len(ret)))
-	pprint(ret)
+	logger.info(ret)
 	logger.info('get_all_rule_files() finished successfully...')
 	return ret
 
@@ -177,7 +182,7 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 			logger.debug('sigma params from rule file will be used...')
 			already_done = True
 			for key, value in yj_rule.get('sigma').items():
-				pprint(value)
+				logger.debug(value)
 				if type(value) == dict:
 					for k2, v2 in value.items():
 						if type(v2) == list:
@@ -185,9 +190,9 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 						if type(v2) == str:
 							if v2 == "": 
 								v2 = "\"\""
-								print("sep empty string...")
+								logger.debug("sep empty string...")
 							sigma_extra_params += f'--{key} {k2}={v2} '
-							print("sep string...")
+							logger.debug("sep string...")
 						if type(v2) == bool:
 							sigma_extra_params += f'--{key} {k2}={v2} '
 		logger.debug('Checking sigma_params from config...')
@@ -204,7 +209,7 @@ def get_sigma_extra_parameters(sigma_extra_parameters, sigma_params, yj_rule):
 					logger.debug('str type params found for key {}...'.format(key))
 					sigma_extra_params += '{} {}  '.format(key, value)
 				else: logger.error('Unhandled type params found for key {} and type {}...'.format(key, type(value)))
-		else: logger.warn('sigma_params are empty in config...')
+		else: logger.warning('sigma_params are empty in config...')
 	except Exception as e:
 		logger.error('Exception {} occurred in get_sigma_extra_parameters()...'.format(e))
 	logger.info('Final sigma_extra_params: {}'.format(sigma_extra_params))
@@ -223,6 +228,11 @@ def install_rule_files_on_siem(sigma_query_format, credentials, out_file_name, r
 			return_status = ala_rule.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, load_yaml_rule_into_json(rule), logger)
 		else:
 			return_status = 1
+	elif sigma_query_format in ['es-eql']:
+		if es_eql.valid_credentials(credentials, logger):
+			return_status, query = es_eql.install_rules(os.path.dirname(os.path.realpath(__file__)), credentials, out_file_name, logger)
+		else:
+			return_status = 1
 	return return_status
 
 
@@ -230,19 +240,19 @@ def get_dict_from_dot_separated_string(ret, len_dlist, dlist, value):
 	try:
 		logger.debug(f'len(dlist) - len_dlist: {len(dlist) - len_dlist}')
 		logger.debug('start ret:')
-		pprint(ret)
+		logger.debug(ret)
 		if len_dlist == 1:
 			ret[dlist[len(dlist) - len_dlist]] = value
 		elif len_dlist > 0:
 			ret[dlist[len(dlist) - len_dlist]] = {}
 			logger.debug('elif ret:')
-			pprint(ret)
+			logger.debug(ret)
 			ret[dlist[len(dlist) - len_dlist]] = get_dict_from_dot_separated_string(ret[dlist[len(dlist) - len_dlist]], len_dlist - 1, dlist, value)
 		else: pass
 	except Exception as e:
 		logger.error(f'Exception {e} occurred in get_dict_from_dot_separated_string()...')
 	logger.debug('end ret:')
-	pprint(ret)
+	logger.debug(ret)
 	return ret
 
 
@@ -256,9 +266,9 @@ def parse_config_override(config_override):
 		k_split = k.split('.')
 		ret = update_dict(ret, get_dict_from_dot_separated_string({}, len(k_split), k_split, v))
 		logger.debug('String to dict:')
-		pprint(ret)
+		logger.debug(ret)
 	logger.info('String to dict:')
-	pprint(ret)
+	logger.info(ret)
 	return ret
 
 
@@ -281,7 +291,7 @@ def update_config(config_override, config):
 		dict_config_override = parse_config_override(config_override)
 		ret = update_dict(ret, dict_config_override)
 		logger.info('Updated config:')
-		pprint(ret)
+		logger.info(ret)
 	except Exception as e:
 		logger.error('Exception {} occurred in update_config()...'.format(e))
 	return ret
@@ -312,7 +322,7 @@ def check_rules_compliance(rules, return_status):
 		command = 'pipenv run python helpers{0}check_if_compliant.py -p {1}'.format(get_slashes(), rules, os.path.abspath(os.getcwd()))
 		logger.debug('Command:')
 		logger.debug(command)
-		result = subprocess.Popen(get_slash_set_path(command), stdout=subprocess.PIPE, shell=True)
+		result = subprocess.Popen(get_slash_set_path(command, logger), stdout=subprocess.PIPE, shell=True)
 		result_out = result.communicate()[0].strip().decode('utf-8')
 		# result_error = process.returncode
 		# if error code var is not empty, then set return status to 1
@@ -372,6 +382,9 @@ def main():
 		if (not ((args.config.get('sigma_query_format') == 'ala-rule'))):
 			# backends that support bulk/multiple rules installation at the same time
 			if (not args.testing) and (args.config.get('sigma_query_format') == 'es-qs'):
+				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name, '')
+				quit_script_with_error_if_failed(return_status)
+			if (not args.testing) and (args.config.get('sigma_query_format') == 'es-eql'):
 				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name, '')
 				quit_script_with_error_if_failed(return_status)
 			else:

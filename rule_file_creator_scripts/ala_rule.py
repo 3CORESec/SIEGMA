@@ -1,3 +1,4 @@
+from logging import log
 import os
 import re
 import copy
@@ -14,14 +15,14 @@ def get_author_name(query_d, yj_rule_d, logger):
     return ret
 
 
-def dump_to_file(dictionary, output='.output.azure.txt'):
+def dump_to_file(logger, dictionary, output='.output.azure.txt'):
     try:
         with open(output, "w") as outfile:
             json.dump(dictionary, outfile)
             outfile.write('\n')
-            print('dict dumped to file {}'.format(output))
+            logger.info('dict dumped to file {}'.format(output))
     except Exception as e:
-        print("Exception {} occurred in dump_to_file()...".format(e))
+        logger.error("Exception {} occurred in dump_to_file()...".format(e))
     return output
 
 
@@ -43,25 +44,25 @@ def get_tags(tag_metadata):
     return ret
 
 
-def is_technique(attack, item):
-    print('Starting is_technique()...')
+def is_technique(attack, item, logger):
+    logger.debug('Starting is_technique()...')
     is_technique_boolean = False
     technique = {}
     match_list = re.findall(r'^attack\.t\d{4,}$', item)
-    print(match_list)
+    logger.debug(match_list)
     if len(match_list) > 0:
-        print(match_list)
+        logger.debug(match_list)
         is_technique_boolean = True
-        technique = get_technique_from_mitre(attack, item.replace('attack.', ''))
+        technique = attack.get_technique_from_id(item)
         # if technique: is_technique_boolean = True
-    print('technique item {} data:'.format(item))
-    pprint(technique)
+    logger.debug('technique item {} data:'.format(item))
+    logger.debug(technique)
     return is_technique_boolean, technique
 
 
-def get_technique_from_mitre(attack, technique_id):
+def get_technique_from_mitre(attack, technique_id, logger):
     found = False
-    print('Starting get_technique_from_mitre()...')
+    logger.debug('Starting get_technique_from_mitre()...')
     ret = {
         'id': technique_id,
         'name': technique_id,
@@ -69,9 +70,9 @@ def get_technique_from_mitre(attack, technique_id):
     }
     for technique in attack.enterprise.techniques:
         if technique.id.lower() == technique_id:
-            print(technique.id)
-            print(technique.name)
-            print(technique.wiki)
+            logger.debug(technique.id)
+            logger.debug(technique.name)
+            logger.debug(technique.wiki)
             ret['id'] = technique.id
             ret['name'] = technique.name
             ret['reference'] = technique.wiki
@@ -102,8 +103,8 @@ def get_tactic_from_mitre(attack, item):
     return ret
 
 
-def is_tactic(attack, item):
-    print('Starting is_tactic()...')
+def is_tactic(attack, item, logger):
+    logger.debug('Starting is_tactic()...')
     is_tactic_boolean = False
     tactic = {}
     match_list = re.findall(r'^attack\.\w{5,}.*$', item)
@@ -113,13 +114,13 @@ def is_tactic(attack, item):
         # print(match_list)
         is_tactic_boolean = True
         tactic = get_tactic_from_mitre(attack, item.replace('attack.', '').replace('_', ' '))
-    print('tactic item {} data:'.format(item))
-    pprint(tactic)
+    logger.debug('tactic item {} data:'.format(item))
+    logger.debug(tactic)
     return is_tactic_boolean, tactic
 
 
-def get_subtechnique_from_mitre(attack, item):
-    print(f'Starting get_subtechnique_from_mitre() for item {item}...')
+def get_subtechnique_from_mitre(attack, item, logger):
+    logger.debug(f'Starting get_subtechnique_from_mitre() for item {item}...')
     ret = {
         'id': '',
         'name': '',
@@ -128,17 +129,17 @@ def get_subtechnique_from_mitre(attack, item):
     for technique in attack.enterprise.techniques:
         for subtechnique in technique.subtechniques:
             if subtechnique.id.lower() == item:
-                print(subtechnique.id)
-                print(subtechnique.name)
-                print(subtechnique.wiki)
+                logger.debug(subtechnique.id)
+                logger.debug(subtechnique.name)
+                logger.debug(subtechnique.wiki)
                 ret['id'] = subtechnique.id
                 ret['name'] = subtechnique.name
                 ret['reference'] = subtechnique.wiki
     return ret
 
 
-def is_subtechnique(attack, item):
-    print('Starting is_subtechnique()...')
+def is_subtechnique(attack, item, logger):
+    logger.debug('Starting is_subtechnique()...')
     is_subtechnique_boolean = False
     subtechnique = {}
     match_list = re.findall(r'^(attack\.t\d{4,})\.\d+$', item)
@@ -146,7 +147,7 @@ def is_subtechnique(attack, item):
     if len(match_list) > 0:
         # print(match_list)
         is_subtechnique_boolean = True
-        subtechnique = get_subtechnique_from_mitre(attack, item.replace('attack.', ''))
+        subtechnique = get_subtechnique_from_mitre(attack, item.replace('attack.', ''), logger)
     return is_subtechnique_boolean, subtechnique
 
 
@@ -175,7 +176,7 @@ def get_mitre_ttps(attack, yj_rule, logger):
     for item in yj_rule[idx:]:
         temp2 = copy.deepcopy(temp)
         logger.debug(f'item: {item}\tidx: {idx}')
-        is_tactic_boolean, tactic = is_tactic(attack, item)
+        is_tactic_boolean, tactic = is_tactic(attack, item, logger)
         logger.debug(f'is_tactic_boolean: {is_tactic_boolean}')
         temp2['tactic'] = tactic
         if is_tactic_boolean:
@@ -188,11 +189,11 @@ def get_mitre_ttps(attack, yj_rule, logger):
                 logger.debug('Started inside for loop...')
                 for idx2, item2 in enumerate(yj_rule[idx:]):
                     logger.debug('for loop is_technique part...')
-                    is_technique_boolean, technique = is_technique(attack, item2)
+                    is_technique_boolean, technique = is_technique(attack, item2, logger)
                     if not is_technique_boolean:
                         # Read subtechniques
                         logger.debug('for loop not is_technique part...')
-                        is_subtechnique_boolean, subtechnique = is_subtechnique(attack, item2)
+                        is_subtechnique_boolean, subtechnique = is_subtechnique(attack, item2, logger)
                         if not is_subtechnique_boolean:
                             logger.debug('for loop not is_subtechnique part...')
                             break
@@ -368,10 +369,10 @@ def get_notes(notes_folder, yj_rule_n, logger):
     try:
         # if type(config_n) == str and config_n != "": 
         #     config_n = [config_n]
-        # config_n = [get_slash_set_path(i) for i in config_n]
+        # config_n = [get_slash_set_path(i, logger) for i in config_n]
         if type(yj_rule_n) == str and yj_rule_n != "": 
             yj_rule_n = [yj_rule_n]
-            yj_rule_n = [get_slash_set_path(i) for i in yj_rule_n]
+            yj_rule_n = [get_slash_set_path(i, logger) for i in yj_rule_n]
         update_required = False
         if (not update_required) and yj_rule_n and type(yj_rule_n) == list and len(yj_rule_n) > 0:
             file_name = yj_rule_n
@@ -389,10 +390,10 @@ def get_notes(notes_folder, yj_rule_n, logger):
             if file_name and len(file_name) > 0 and type(file_name) == list:
                 for i in file_name:
                     if i[0] == get_slashes(): i = i[1:]
-                    with open(get_slash_set_path(notes_folder + i)) as input_file:
+                    with open(get_slash_set_path(notes_folder + i, logger)) as input_file:
                         ret += input_file.read()
                         ret += "\n"
-                        print(ret)
+                        logger.debug(ret)
     except Exception as e:
         logger.error(f'Exception {e} occurred in get_notes()...')
         return ret
@@ -506,7 +507,7 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         query['description'] += '' if yj_rule.get('references') is None else '\n\n# References:\n\n' + list_to_str(yj_rule.get('references'), logger)
         # only take first 5000 chars of description because Sentinel doesn't support more
         if len(query['description']) > 5000:
-            logger.warn('description length exceeds 5000 for {}. Therefore going to select only first 5000 chars and omitting rest...'.format(query['displayName']))
+            logger.warning('description length exceeds 5000 for {}. Therefore going to select only first 5000 chars and omitting rest...'.format(query['displayName']))
             query['description'] = query['description'][:4960] + '\n\nSee rest in original rule.yml file.'
         ####################################################
 
@@ -518,8 +519,8 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
 
         #############
         logger.info('Final rule_content:')
-        pprint(rule_content)
-        rule_file = dump_to_file(rule_content, output=output)
+        logger.info(config)
+        rule_file = dump_to_file(logger, rule_content, output=output)
     except Exception as e:
         logger.error(f'Exception {e} occurred in create_rule()...')
     return rule_file

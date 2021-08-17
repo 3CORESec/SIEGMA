@@ -89,7 +89,8 @@ def get_sigma_query_conversion_result(sigma, sigma_config, sigma_query_format, r
 		# if windows machine
 		if os.name == 'nt':
 			logger.info('Windows powershell command shall be executed...')
-			command = 'powershell -nop -c "pipenv run python {0}\\tools\\sigmac -c {1} -t {2} {4} {3};"'.format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			command = 'powershell -nop -c "cd {0};pipenv run python tools\\sigmac -c {1} -t {2} {4} {3};"'.format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			# command = 'powershell -nop -c "pipenv run python {0}\\tools\\sigmac -c {1} -t {2} {4} {3};"'.format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
 			logger.debug(command)
 			result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 			result_out = result.stdout.decode('utf-8')
@@ -103,7 +104,8 @@ def get_sigma_query_conversion_result(sigma, sigma_config, sigma_query_format, r
 		# if linux machine
 		else:
 			logger.info('Linux shell shall be executed...')
-			command = "pipenv run python {0}/tools/sigmac -c {1} -t {2} {4} {3};".format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			# command = "pipenv run python {0}/tools/sigmac -c {1} -t {2} {4} {3};".format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
+			command = "cd {0};pipenv run python tools/sigmac -c {1} -t {2} {4} {3};".format(sigma, sigma_config, sigma_query_format, rule, sigma_extra_parameters)
 			logger.debug('Command:')
 			logger.debug(command)
 			process = subprocess.Popen(get_slash_set_path(command, logger), stdout=subprocess.PIPE, shell=True)

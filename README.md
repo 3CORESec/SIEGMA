@@ -2,7 +2,7 @@
 
 This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format and engine.
 
-<p align="center"><img align="center" src="https://i.imgur.com/laf6vv6.png"></p>
+<p align="center"><img align="center" src="https://i.imgur.com/zrtGgyb.png"></p>
 
 It is also our objective to take a community approach to SIEM schemas, maintaining easy to read data dictionaries while making it trivial to add custom fields based on specific use cases.
 

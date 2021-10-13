@@ -493,6 +493,13 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         # update displayName
         query['displayName'] = get_author_name(query['displayName'], yj_rule.get('author'), logger)
         
+        # Force addition of MITRE tactics
+        if 'tactics' not in query or query['tactics'] == []:
+            if 'tags' in yj_rule:
+                query['tactics'] = attack.get_tactics_name_set(yj_rule.get('tags'))
+                logger.debug('Returning tactics: ...')
+                pprint(query['tactics'])
+        
         ######### description updates ##########################
         # merge author in description
         query['description'] += '' if yj_rule.get('author') is None else '\n\n# Author:\n\n' + list_to_str(yj_rule.get('author'), logger)

@@ -1,4 +1,7 @@
+import re
 import requests
+
+from rule_file_creator_scripts.ala_rule import is_tactic
 
 
 class MitreAttack:
@@ -22,6 +25,55 @@ class MitreAttack:
     }
     techniques = None
     to_be_lowered_chrs = ['and']
+
+
+    def get_tactics_name_set(self, yj_rule_tags):
+        ret = set()
+        for tag in yj_rule_tags:
+            is_tactic_boolean, tactic = self.is_tactic(tag)
+            is_technique_boolean, technique = self.is_technique(tag)
+            if is_tactic_boolean and (not is_technique_boolean):
+                print('tactic found...')
+                ret.add(tactic.get('name'))
+        return list(ret)
+
+
+    def is_tactic(self, item):
+        print('Starting is_tactic()...')
+        is_tactic_boolean = False
+        tactic = {}
+        match_list = re.findall(r'^attack\.\w{5,}.*$', item)
+        if item.count('.') > 1: match_list = []
+        # print(match_list)
+        if len(match_list) > 0:
+            print(match_list)
+            is_tactic_boolean = True
+            # print('up')
+            # input('')
+            tactic = self.get_tactic_from_name(item)    
+            #     tactic = get_tactic_from_mitre(attack, item.replace('attack.', '').replace('_', ' '))
+            # print('down')
+            # input('')
+        print('tactic item {} data:'.format(item))
+        print(tactic)
+        return is_tactic_boolean, tactic
+
+
+    def is_technique(self, item):
+        print('Starting is_technique()...')
+        is_technique_boolean = False
+        technique = {}
+        match_list = re.findall(r'^attack\.t\d{4,}((\.\d{3,})*)$', item)
+        print(match_list)
+        if len(match_list) > 0:
+            print(match_list)
+            is_technique_boolean = True
+            technique = self.get_technique_from_id(item)
+            # technique = get_technique_from_mitre(attack, item.replace('attack.', ''), logger)
+            # if technique: is_technique_boolean = True
+        print('technique item {} data:'.format(item))
+        print(technique)
+        return is_technique_boolean, technique
 
 
     def format_tactic_name(self, tactic_name):

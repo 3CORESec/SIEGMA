@@ -229,9 +229,10 @@ def get_mitre_ttps(attack, yj_rule, logger):
                             temp2['technique'].append(technique)
                         else:
                             print('breaking inner for loop idx={} ==> idx2={}...'.format(idx, idx2))
-                            idx += idx2
+                            # idx -= 1
                             print('breaking inner for loop after ++ idx={}...'.format(idx, idx2))
                             break
+                        idx += 1
                         # if not is_technique_boolean:
                             # Read subtechniques
                             # logger.debug('for loop not is_technique part...')

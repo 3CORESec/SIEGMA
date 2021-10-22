@@ -1,8 +1,6 @@
 import re
 import requests
 
-from rule_file_creator_scripts.ala_rule import is_tactic
-
 
 class MitreAttack:
     

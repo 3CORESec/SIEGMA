@@ -85,14 +85,6 @@ Want to know more how it all comes together or want to contribute support for a 
   - ~~Elastic SIEM~~
   - ~~Azure Sentinel~~
   - Splunk (To be developed)
-- ~~Enable use of sigma backend options~~
-- ~~Override siegma config from the commandline~~
-- ~~Functionality to create aggregate rules in Elastic/Kibana using `es-qs` as backend~~
-- ~~Enable notes/investigation guide addition to Kibana using es-qs as backend~~
-- ~~Compliance check for rules if they are in the format that is supported by siegma or not~~
-- ~~Add rule format compliance check~~
-- ~~Remove sigma virtualenv and shift to pipenv~~
-- ~~Get rid of sigma virtual environment switch and parameter~~
 
 # Feedback
 

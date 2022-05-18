@@ -32,7 +32,7 @@ def empty_output_file(output='.output.ndjson'):
 def setup_args():
 	parser = argparse.ArgumentParser(os.path.basename(__file__))
 	parser.add_argument('-c', '--config', metavar='<config_file_path>', type=str, default='config/.config.json', help='Config file path. Eg: /path/to/config.json')
-	parser.add_argument('-r', '--rule', metavar='<rule_file_path> / <rule_folder_path>', type=str, help='Rule file / folder path. Eg: /path/to/rule/file.yml or /path/to/rules/folder.')
+	parser.add_argument('-r', '--rule', metavar='<rule_file_path> / <rule_folder_path>', type=str, help='Rule file / folder path. This should be either the absolute path from root folder or should be relative to sigma, NOT siegma. Eg: /path/to/rule/file.yml or /path/to/rules/folder.')
 	parser.add_argument('-s', '--sigma', metavar='<sigma_directory>', type=str, default='', help='Sigma repository path. Eg: /path/to/sigma.')
 	parser.add_argument('-sc', '--sigma_config', metavar='<sigma_config_file>', type=str, default='', help='Sigma config file path. Eg: /path/to/sigma/tools/config/ecs-cloudtrail.yml.')
 	parser.add_argument('-o', '--output', metavar='<output_file>', type=str, default='.output', help='Output file path. Eg: /path/to/output_file.')
@@ -386,7 +386,7 @@ def main():
 			if (not args.testing) and (args.config.get('sigma_query_format') == 'es-qs'):
 				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name, '')
 				quit_script_with_error_if_failed(return_status)
-			if (not args.testing) and (args.config.get('sigma_query_format') == 'es-eql'):
+			elif (not args.testing) and (args.config.get('sigma_query_format') == 'es-eql'):
 				return_status = install_rule_files_on_siem(args.config.get('sigma_query_format'), args.config.get('credentials'), out_file_name, '')
 				quit_script_with_error_if_failed(return_status)
 			else:

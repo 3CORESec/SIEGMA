@@ -446,6 +446,48 @@ def add_new_items_to_config(shared_config, rule_config, logger):
     return shared_config
 
 
+def get_enabled_state(id, credentials, script_dir, logger):
+    enabled_state = True
+    return_status = 0
+    curl_path = get_slash_set_path(script_dir + '/helpers/curl/curl.exe', logger)
+    # if windows machine
+    if os.name == 'nt':
+        # command = 'powershell -nop -c \"{} {};\"'.format(curl_path, "-X GET {}/api/detection_engine/rules?rule_id={} -u '{}:{}' -H 'kbn-xsrf: true'".format(credentials.get('kibana_url'), "53209551-b8ce-4945-8df4-0d70314f91e7", credentials.get('kibana_username'), credentials.get('kibana_password')))
+        command = 'powershell -nop -c \"{} {};\"'.format(curl_path, "-X GET {}/api/detection_engine/rules?rule_id={} -u '{}:{}' -H 'kbn-xsrf: true'".format(credentials.get('kibana_url'), id, credentials.get('kibana_username'), credentials.get('kibana_password')))
+        logger.debug('Command: {}'.format(command))
+        logger.info('Windows powershell command shall be executed...')
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        result_out = json.loads(result.stdout.decode('utf-8'))
+        result_error = result.stderr.decode('utf-8')
+        # if error code var is not empty, then set return status to 1
+        if result.returncode != 0: return_status = 1
+        logger.debug(result_out)
+        if 'enabled' in result_out and result_out.get('enabled') == False:
+            logger.warn('Rule {} state will be disabled...'.format(id))
+            enabled_state = False
+        if return_status == 1:
+            logger.error(result_error)
+    # if linux machine
+    else:
+        # command = """curl -X GET "{}/api/detection_engine/rules?rule_id={}" -u '{}:{}' -H 'kbn-xsrf: true'""".format(credentials.get('kibana_url'), "53209551-b8ce-4945-8df4-0d70314f91e7", credentials.get('kibana_username'), credentials.get('kibana_password'))
+        command = """curl -X GET "{}/api/detection_engine/rules?rule_id={}" -u '{}:{}' -H 'kbn-xsrf: true'""".format(credentials.get('kibana_url'), id, credentials.get('kibana_username'), credentials.get('kibana_password'))
+        logger.debug('Command: {}'.format(command))
+        logger.info('Linux shell shall be executed...')
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+        proc_stdout = process.communicate()[0].strip().decode('utf-8')
+        print(proc_stdout)
+        result_out = json.loads(proc_stdout)
+        result_error = process.returncode
+        # if error code var is not empty, then set return status to 1
+        if result_error != 0: return_status = 1
+        logger.debug(result_out)
+        if 'enabled' in result_out and result_out.get('enabled') == False:
+            logger.warn('Rule {} state will be disabled...'.format(id))
+            enabled_state = False
+    
+    return enabled_state
+
+
 def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_rule()...')
     rule_file = None
@@ -481,6 +523,8 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         config = rate_based_rule_settings(sigma_config, config, config.get('threshold'), yj_rule.get('threshold'), logger)
         # investigation notes
         config['note'] = get_notes(notes_folder, config.get('note'), yj_rule.get('note'), logger)
+        # get current enabled state of the rule from the SIEM
+        config['enabled'] = get_enabled_state(yj_rule.get('id'), credentials, script_dir, logger)
         #############
         logger.info('Final config:')
         logger.info(config)

@@ -487,6 +487,38 @@ def get_enabled_state(id, credentials, script_dir, logger):
     return enabled_state
 
 
+def get_elastic_actions_s2(val):
+    '''
+    Sub function of author name that performs several checks before finalizing the elastic actions
+    '''
+    ret = None
+    if isinstance(val, list):
+        ret = val
+    elif val is None:
+        ret = val
+    else: ret = list(val)
+    return ret
+
+
+def get_elastic_actions(yj_rule, config, logger):
+    ret = None
+    already_done = False
+    if not already_done:
+        ret = get_elastic_actions_s2(yj_rule)
+        if ret is not None: 
+            already_done = True
+            logger.debug(f'Elastic actions {ret} set from rule...')
+    if not already_done:
+        if not config is None:
+            ret = get_elastic_actions_s2(config)
+            if ret is not None:
+                already_done = True
+                logger.debug(f'Elastic actions {ret} set from config...')
+            else: ret = []
+        else: ret = []
+    return ret
+
+
 def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, query, yj_rule, attack, output, script_dir, logger, testing=False):
     logger.info('Starting create_rule()...')
     rule_file = None
@@ -512,6 +544,8 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         config['risk_score'] = get_risk_score(yj_rule.get('level')) if 'score' not in yj_rule else yj_rule.get('score')
         # tags set
         config['tags'] = yj_rule.get('siemtags') if yj_rule and 'siemtags' in yj_rule and type(yj_rule.get('siemtags')) == list else []
+        # actions set
+        config['actions'] = get_elastic_actions(yj_rule.get('elastic_actions'), config.get('actions'), logger)
         # MITRE settings
         if yj_rule.get('tags'): config['threat'] = get_mitre_ttps(attack, yj_rule.get('tags'), logger)
         # rule ID set

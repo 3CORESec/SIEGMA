@@ -85,6 +85,9 @@ Want to know more how it all comes together or want to contribute support for a 
   - ~~Elastic SIEM~~
   - ~~Azure Sentinel~~
   - Splunk (To be developed)
+- Additional Features
+  - Elastic
+    - ~~Actions support~~
 
 # Feedback
 

@@ -445,9 +445,14 @@ def add_new_items_to_config(shared_config, rule_config, logger):
     return shared_config
 
 
-def get_enabled_state(id, credentials, script_dir, logger):
+def get_enabled_state(id, credentials, script_dir, logger, testing=False):
     enabled_state = True
     return_status = 0
+
+    if testing:
+        logger.warn('Since testing switch is enabled, enablement check will not be performed. Considering status as enabled....')
+        return enabled_state
+
     curl_path = get_slash_set_path(script_dir + '/helpers/curl/curl.exe', logger)
     # if windows machine
     if os.name == 'nt':
@@ -557,7 +562,7 @@ def create_rule(siegma_config, notes_folder, config, sigma_config, credentials, 
         # investigation notes
         config['note'] = get_notes(notes_folder, config.get('note'), yj_rule.get('note'), logger)
         # get current enabled state of the rule from the SIEM
-        config['enabled'] = get_enabled_state(yj_rule.get('id'), credentials, script_dir, logger)
+        config['enabled'] = get_enabled_state(yj_rule.get('id'), credentials, script_dir, logger, testing=testing)
         #############
         logger.info('Final config:')
         logger.info(config)

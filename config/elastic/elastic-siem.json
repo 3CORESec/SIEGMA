@@ -6,9 +6,10 @@
         ]
     },
     "credentials": {    
-        "kibana_username": "",
-        "kibana_password": "",
-        "kibana_url": ""
+        "username": "",
+        "password": "",
+        "siem_url": "",
+        "apikey": ""
     },
     "notes_folder": "",
     "settings": {
@@ -18,7 +19,7 @@
         "from":"now-15m",
         "index":["*"],
         "interval":"5m",
-        "language":"kuery",
+        "language":"lucene",
         "output_index":".siem-signals-default",
         "references":[],
         "false_positives":[],

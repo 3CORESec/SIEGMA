@@ -1,6 +1,6 @@
 # SIEGMA
 
-This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format engine and [pysigma](https://pypi.org/project/pysigma/) library pysigma in the converter processes.
+This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format engine and [pysigma](https://pypi.org/project/pysigma/) library in the converter processes.
 
 <p align="center"><img align="center" src="https://i.imgur.com/zrtGgyb.png"></p>
 
@@ -48,7 +48,7 @@ Activate the virtual environment:
 
 `poetry shell`
 
-It is recommended to consult the [docs](docs/) folder to help, especially for advanced usage instructions.
+It is recommended to consult the [docs](docs/) folder for help, especially for advanced usage instructions.
 
 In order to provide examples for each specific platform, we have moved the examples section to their own README section inside of the [config folder](./config) of the SIEM in question.
 

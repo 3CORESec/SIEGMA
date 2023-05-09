@@ -1,3 +1,5 @@
+# To get more information about the errors, user DEBUG verbosity level.
+
 class RuleSintaxeError(Exception):
     """
         Error in the RuleSintaxe.

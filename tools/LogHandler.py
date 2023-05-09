@@ -63,7 +63,7 @@ class LogHandler:
             logging.FileHandler: File handler
         """
 
-        file_handler = logging.FileHandler(self.log_file_name)
+        file_handler = logging.FileHandler(f"output\{self.log_file_name}")
         file_handler.setFormatter(logging.Formatter(self.file_log_fmt, datefmt=self.datetimefmt))
         
         return file_handler

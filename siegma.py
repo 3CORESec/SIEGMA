@@ -1,12 +1,11 @@
 from tools.LogHandler import LogHandler, logging_levels
-from Exceptions import CreateRuleByApiError, RuleSintaxeError, FileExtensionError
 from tools.FileTools import FileTools
 from tools.DirectoryTools import DirectoryTools
 from tools.SigmaUtils import SigmaRule, get_sigma_configuration
-from tools.Backends import Backends
+from backends.Backends import Backends
 import argparse
 import os
-from converters import all_converters
+from backends import all_backends
 import traceback
 
 def setup_args() -> argparse.Namespace:
@@ -16,8 +15,8 @@ def setup_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(os.path.basename(__file__))
     parser.add_argument("-c", "--config", required=True, dest="config", help="Config file path. Eg: /path/to/config.json")
-    parser.add_argument("-b", "--backend",  choices=Backends._member_names_, dest="backend", default="elastic", help=f"SIEM backend to perform the conversion. Eg: {'|'.join(Backends._member_names_)}")
-    parser.add_argument("--api", dest="api", action="store_true", default=False, help="Pass this argument to create a rule in the SIEM via the api.")
+    parser.add_argument("-b", "--backend",  choices=Backends._member_names_, required=True, dest="backend", help=f"SIEM backend to perform the conversion. Eg: {'|'.join(Backends._member_names_)}")
+    parser.add_argument("--api", dest="api", action="store_true", default=False, help="Create a rule in the SIEM using the API.")
     parser.add_argument('-p', '--path', type=str, required=True, help='Rule file / folder path. This should be either the absolute path from root folder or should be relative to sigma, NOT siegma. Eg: /path/to/rule/file.yml or /path/to/rules/folder.')
     parser.add_argument("-sc", "--sigma_config", dest="sigma_config_file", type=str, help="Sigma config file path. Eg: /path/to/sigma/tools/config/ecs-cloudtrail.yml.", required=True)
     parser.add_argument("-o", "--output", dest="output_file", type=str, help="Output file path. Eg: /path/to/output_file.", default=".output.ndjson")
@@ -45,7 +44,7 @@ def main():
     logger.info(f"{backend.name} backend has been loaded.")
 
     logger.debug(f"Loading {backend.name} convertor")
-    rule_convertor = all_converters[backend.name](siem_config)
+    rule_convertor = all_backends[backend.name](siem_config)
 
     if not FileTools.check_if_is_a_file(args.path):
         logger.info("Loading rules files")
@@ -80,7 +79,7 @@ def main():
             elastic_rule = rule_convertor.create_rule(rule_content[0], query)
 
             logger.debug("Saving rule to a file.")
-            rule_convertor.write_rule(args.output_file, elastic_rule)
+            rule_convertor.write_rule(f"output\{args.output_file}", elastic_rule)
             logger.info(f"The rule has been saved in the {args.output_file} file.")
 
             if args.api:
@@ -98,7 +97,6 @@ def main():
         except Exception as e:
             logger.error(f"Error during the conversion process of the rule {rule_content[0].title}")
             logger.error(e)
-            errors += 1
             if args.verbosity_level == "DEBUG":
                 traceback.print_exc()
 

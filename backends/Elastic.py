@@ -1,6 +1,7 @@
-from converters.ConvertorsBase import ConvertorsBase
-from sigma.parser.collection import SigmaParser
+from backends.BackendBase import BackendBase
+from sigma.collection import SigmaCollection
 from sigma.pipelines.elasticsearch.windows import ecs_windows
+from sigma.pipelines.elasticsearch.zeek import ecs_zeek_beats
 from Exceptions import CreateRuleByApiError, FileExtensionError
 from tools.FileTools import FileTools
 from sigma.rule import SigmaRule
@@ -43,7 +44,7 @@ class RiskSocreMapping(Enum):
         return cls.MEDIUM
 
 @dataclass
-class ElasticConverter(ConvertorsBase):
+class ElasticBackend(BackendBase):
     """
         Elastic converter, use this class to convert sigma rule into elastic rule.
     
@@ -84,7 +85,7 @@ class ElasticConverter(ConvertorsBase):
 
         return {
             "rule_id": str(sigma_rule.id),
-            "author": [author.strip() for author in sigma_rule.author.split(",")],
+            "author": elastic_config["settings"]["author"] if len(elastic_config["settings"]["author"]) > 0 else [author.strip() for author in sigma_rule.author.split(",")],
             "from": elastic_config["settings"]["from"],
             "index": elastic_config["settings"]["index"],
             "interval": elastic_config["settings"]["interval"],
@@ -107,7 +108,7 @@ class ElasticConverter(ConvertorsBase):
             "throttle": elastic_config["settings"]["throttle"]
         }
 
-    def convert(self, sigma_parser_rule: SigmaParser, backend: callable) -> str:
+    def convert(self, sigma_parser_rule: SigmaCollection, backend: callable) -> str:
         """
             Function responsible for converting a sigma rule into a elastic query.
 
@@ -119,6 +120,8 @@ class ElasticConverter(ConvertorsBase):
             str: Return the query as string
         """ 
 
+        print(type(sigma_parser_rule))
+        print(sigma_parser_rule)
         rule = backend(ecs_windows()).convert(sigma_parser_rule)[0]
 
         return rule

@@ -1,5 +1,4 @@
 {
-    "sigma_query_format": "es-qs",
     "sigma_params": {
         "--backend-option": [
             ""
@@ -11,24 +10,13 @@
         "siem_url": "",
         "apikey": ""
     },
-    "notes_folder": "",
     "settings": {
-        "rule_id": "",
-        "id": "",
         "author":[],
         "from":"now-15m",
         "index":["*"],
         "interval":"5m",
         "language":"lucene",
         "output_index":".siem-signals-default",
-        "references":[],
-        "false_positives":[],
-        "risk_score":0,
-        "name":"",
-        "description":"",
-        "query":"",
-        "severity":"",
-        "tags":[],
         "to":"now",
         "type":"query",
         "threat":[],

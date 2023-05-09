@@ -4,10 +4,10 @@ from sigma.collection import SigmaCollection
 from tools.MitreAttack import get_techinique_infos
 import re
 
-class ConvertorsBase(ABC):
+class BackendBase(ABC):
     """
         Convertors abstract base class, use this class to create a new converter.
-    """    
+    """
     def __init__(self, siem_config: dict[any, any]):
         """
             Class Inicializer

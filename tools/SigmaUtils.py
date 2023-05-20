@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from sigma.collection import SigmaCollection
 from sigma.validation import SigmaValidator 
 from sigma.configuration import SigmaConfiguration
-from Exceptions import RuleSintaxeError
+from Exceptions import RuleSyntaxError
 
 
 def get_sigma_configuration(sigma_config_file_path : str) -> SigmaConfiguration:
@@ -49,15 +49,15 @@ class SigmaRule:
 
         return rule
 
-    def check_rule_sintaxe(self, rule: SigmaCollection) -> None:        
+    def check_rule_syntax(self, rule: SigmaCollection) -> None:        
         """
-            Check if the rule sintaxe is satisfied.
+            Check if the rule syntax is satisfied.
 
         Args:
             rule (SigmaCollection): Loaded sigma rule object.
 
         Raises:
-            RuleSintaxeError: Rule sintaxe error exception.
+            RuleSyntaxError: Rule sintaxe error exception.
         """
 
         rule_validator = SigmaValidator(validators={AllOfThemConditionValidator})
@@ -65,5 +65,5 @@ class SigmaRule:
         issues = rule_validator.validate_rules(rule)
 
         if len(issues) > 0:
-            raise RuleSintaxeError(f"Issues in the rule sintaxe. Errors: {issues}")
+            raise RuleSyntaxError(f"Issues in the rule sintaxe. Errors: {issues}")
 

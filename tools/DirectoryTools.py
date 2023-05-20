@@ -2,7 +2,7 @@ import os
 
 class DirectoryTools:
     """
-        Some common functions to manipulate Directories.
+        Provides common functions to work with directories.
     """
 
     @staticmethod
@@ -23,7 +23,7 @@ class DirectoryTools:
     @staticmethod
     def get_files_by_extension(folder_path: str, get_sub_directories: bool = True, extension: str = ".yml") -> list[str]:
         """
-            Get files by a determined extension.
+            Return files of a determined extension from a given directory.
 
         Args:
             folder_path (str): Directory to look for files.

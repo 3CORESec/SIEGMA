@@ -1,8 +1,7 @@
 from backends.BackendBase import BackendBase
 from sigma.collection import SigmaCollection
 from sigma.pipelines.elasticsearch.windows import ecs_windows
-from sigma.pipelines.elasticsearch.zeek import ecs_zeek_beats
-from Exceptions import CreateRuleByApiError, FileExtensionError
+from Exceptions import CreateRuleViaApiError, FileExtensionError
 from tools.FileTools import FileTools
 from sigma.rule import SigmaRule
 from dataclasses import dataclass
@@ -15,7 +14,7 @@ import base64
 
 class RiskSocreMapping(Enum):
     """
-        Elastic risk socre mapping.
+        Elastic risk score mapping.
     """
  
     INFORMATIONAL = 1
@@ -33,7 +32,7 @@ class RiskSocreMapping(Enum):
             risk (str): Risk level
 
         Returns:
-            int: Return the number of risk associated with the rule.
+            int: Return the risk number associated with the rule.
         """     
 
         risk = risk.upper()
@@ -77,7 +76,7 @@ class ElasticBackend(BackendBase):
             query (str): Query as string, use the convert method to get a query string
 
         Returns:
-            any: Return the rule following each SIEM sintaxe.
+            any: Return the rule following each SIEM syntax.
         """
 
         elastic_config = self.siem_config
@@ -120,15 +119,13 @@ class ElasticBackend(BackendBase):
             str: Return the query as string
         """ 
 
-        print(type(sigma_parser_rule))
-        print(sigma_parser_rule)
         rule = backend(ecs_windows()).convert(sigma_parser_rule)[0]
 
         return rule
 
     def create_rule_by_api(self, rule: dict[str, any], siem_url: str, username: str, _passwd: str, apikey="") -> dict[any, any]:
         """
-            Create a new elastic rule by api.
+            Create a new elastic rule via api.
 
         Args:
             rule (dict[str, any]): Rule content, use converter.elastic.create_rule to get a valid rule.
@@ -136,7 +133,7 @@ class ElasticBackend(BackendBase):
             __passwd (str): Password to authenticate.
 
         Raises:
-            CreateRuleByApiError: Custom exception, if you see it, it means some error happened in the process. 
+            CreateRuleViaApiError: Custom exception, if you see it, it means some error happened in the process. 
 
         Returns:
             dict[any, any]: Rule content.
@@ -157,13 +154,13 @@ class ElasticBackend(BackendBase):
         resp_content = resp.json()
 
         if resp.status_code != 200:
-            raise CreateRuleByApiError(resp_content["message"])
+            raise CreateRuleViaApiError(resp_content["message"])
 
         return resp.json()
 
     def create_elastic_attack_mapping(self, techniques: list[str]) -> dict[str, any]:
         """
-            Gather information from a technique in the mitre attack mapping and return them as a elastic threat type.
+            Gather technique information in the mitre attack mapping and return them as an elastic threat type.
 
         Args:
             techniques (list[str]): Techniques to search

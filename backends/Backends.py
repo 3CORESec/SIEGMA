@@ -3,7 +3,7 @@ from enum import Enum
 
 class Backends(Enum):
     """
-        Enun with all available backends
+        Enum all available backends.
     """
     elastic = LuceneBackend
 

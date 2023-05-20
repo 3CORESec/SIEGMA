@@ -2,7 +2,7 @@
 name = "siegma"
 version = "0.2.0"
 description = "This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the Sigma rule format and engine."
-authors = ["DiogoBraz <https://github.com/DiogoBraz>", "heyibrahimkhan <https://github.com/heyibrahimkhan>", "wesley587 <https://github.com/wesley587>", "w0rk3r <https://github.com/w0rk3r>"]
+authors = authors = ["heyibrahimkhan <https://github.com/heyibrahimkhan>", "wesley587 <https://github.com/wesley587>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

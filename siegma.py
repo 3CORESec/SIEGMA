@@ -17,7 +17,7 @@ def setup_args() -> argparse.Namespace:
     parser.add_argument("-c", "--config", required=True, dest="config", help="Config file path. Eg: /path/to/config.json")
     parser.add_argument("-b", "--backend",  choices=Backends._member_names_, required=True, dest="backend", help=f"SIEM backend to perform the conversion. Eg: {'|'.join(Backends._member_names_)}")
     parser.add_argument("--api", dest="api", action="store_true", default=False, help="Create a rule in the SIEM using the API.")
-    parser.add_argument('-p', '--path', type=str, required=True, help='Rule file / folder path. This should be either the absolute path from root folder or should be relative to sigma, NOT siegma. Eg: /path/to/rule/file.yml or /path/to/rules/folder.')
+    parser.add_argument('-p', '--path', type=str, required=True, help='Rule file / folder path. This should be the absolute path from root folder or should be relative to sigma, NOT siegma. Eg: /path/to/rule/file.yml or /path/to/rules/folder.')
     parser.add_argument("-sc", "--sigma_config", dest="sigma_config_file", type=str, help="Sigma config file path. Eg: /path/to/sigma/tools/config/ecs-cloudtrail.yml.", required=True)
     parser.add_argument("-o", "--output", dest="output_file", type=str, help="Output file path. Eg: /path/to/output_file.", default=".output.ndjson")
     parser.add_argument("-v", "--verbosity", dest="verbosity_level", choices=logging_levels, type=str, default="INFO", help=f"Execution verbosity level. Eg: {'|'.join(logging_levels)}")
@@ -69,8 +69,8 @@ def main():
 
             logger.info(f"Find the rule {rule_content[0].title}")
 
-            logger.debug("Checking rule sintaxe.")
-            sigma_rule_object.check_rule_sintaxe(rule_content)
+            logger.debug("Checking rule syntax.")
+            sigma_rule_object.check_rule_syntax(rule_content)
 
             logger.debug("Getting rule query.")
             query = rule_convertor.convert(rule_content, backend.value)

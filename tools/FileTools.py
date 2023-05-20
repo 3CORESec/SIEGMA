@@ -4,7 +4,7 @@ import json
 
 class FileTools:
     """
-        Some common functions to manipulate files.
+                Provides common functions to work with files.
     """
 
     @staticmethod
@@ -39,7 +39,7 @@ class FileTools:
     @staticmethod
     def get_dirname(path: str) -> str:
         """
-            Get the directory of a file, pass the full path.
+            Return the directory of a file. Pass the full file path as an argument.
 
         Args:
             path (str): File path.
@@ -53,7 +53,7 @@ class FileTools:
     @staticmethod
     def load_json_file(file_path: str) -> dict[str, any]:
         """
-            Load a json file.
+            Loads a given JSON file..
 
         Args:
             file_path (str): File path to be loaded.
@@ -70,7 +70,7 @@ class FileTools:
     @staticmethod
     def get_file_extension_name(file_path: str) -> str:
         """
-            Collect the file extensions name.
+            Returns the extension of a given file.
 
         Args:
             file_path (str): File path.
@@ -84,7 +84,7 @@ class FileTools:
     @staticmethod
     def check_if_is_a_file(path: str) -> bool:
         """
-            Check if a path is a valid file.
+            Check if a file exists by validating its full path.
 
         Args:
             path (str): Full path.

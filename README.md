@@ -1,6 +1,6 @@
 # SIEGMA
 
-This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format engine and [pysigma](https://pypi.org/project/pysigma/) library in the converter processes.
+This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format and [pySigma](https://pypi.org/project/pysigma/) library in the conversion process.
 
 <p align="center"><img align="center" src="https://i.imgur.com/zrtGgyb.png"></p>
 
@@ -86,8 +86,11 @@ Feel free to open an [issue](https://github.com/3CORESec/SIEGMA/issues) or ping 
 
 
 ### Authors
-
-- [DiogoBraz](https://github.com/DiogoBraz)
 - [heyibrahimkhan](https://github.com/heyibrahimkhan)
 - [wesley587](https://github.com/wesley587)
+
+### Contributors
+
+- [DiogoBraz](https://github.com/DiogoBraz)
 - [w0rk3r](https://github.com/w0rk3r)
+- [Tiago Faria](https://github.com/0xtf)

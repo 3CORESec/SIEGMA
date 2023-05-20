@@ -1,22 +1,22 @@
 # To get more information about the errors, user DEBUG verbosity level.
 
-class RuleSintaxeError(Exception):
+class RuleSyntaxError(Exception):
     """
-        Error in the RuleSintaxe.
+        Error in the RuleSyntax.
     """
 
     pass
 
-class CreateRuleByApiError(Exception):
+class CreateRuleViaApiError(Exception):
     """
-        Erro to create a rule by API. e.g. Invalid SIEM resource.
+        Error while creating the rule via API. e.g., Invalid SIEM resource
     """
 
     pass
 
 class FileExtensionError(Exception):
     """
-        File extension error, e.g. The SIEM needs a json and was passed a txt output file.
+        File extension error, e.g., The SIEM requires a JSON and was provided a file with another extension.
     """
 
     pass

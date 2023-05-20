@@ -12,7 +12,7 @@ Show all the available arguments and their descriptions.
 - -config, --config
 Config file path. Eg: /path/to/config.json.
 
-This argument is **MANDATORY**.
+This argument is **required**.
 
 ```
 dest: config
@@ -22,7 +22,7 @@ dest: config
 
 SIEM backend used for the conversion process. Eg: elastic
 
-This argument is **MANDATORY**.
+This argument is **required**.
 
 ```
 dest: backend
@@ -36,9 +36,9 @@ dest: api
 ```
 - -p , --path
 
-Provide the file or folder path for the rule. The path should be either an absolute path from the root folder or a relative path to the sigma folder, not the siegma folder. Eg: /path/to/rule/file.yml or /path/to/rules/folder.
+Provide the file or folder path for the rule. The path should be either an absolute path from the root folder or a relative path to the sigma folder, not the siegma folder. E.g., `/path/to/rule/file.yml` or `/path/to/rules/folder`.
 
-This argument is **MANDATORY**.
+This argument is **required**.
 
 ```
 dest: path

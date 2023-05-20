@@ -6,7 +6,7 @@ import re
 
 class BackendBase(ABC):
     """
-        Convertors abstract base class, use this class to create a new converter.
+        Convertors abstract base class. use this class to create a new converter.
     """
     def __init__(self, siem_config: dict[any, any]):
         """
@@ -42,13 +42,13 @@ class BackendBase(ABC):
     @abstractclassmethod
     def create_rule(self, sigma_rule: SigmaRule, query: str) -> any:
         """
-            Use this function to create a rule following the SIEM sintaxe. 
+            Use this function to create a rule following the SIEM syntax. 
         Args:
             sigma_rule (SigmaRule): Sigma rule content, use tools.SigmaUtils.SigmaRule.get_yml_file_content to create a SigmaRule object
             query (str): Query as string, use the convert method to get a query string
 
         Returns:
-            any: Return the rule following each SIEM sintaxe.
+            any: Return the rule following each SIEM syntax.
         """
 
     def create_rule_by_api(self, rule: dict[str, any], siem_url: str="", username: str="", __passwd: str="", apikey: str="") -> any:

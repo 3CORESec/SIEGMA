@@ -86,11 +86,10 @@ Feel free to open an [issue](https://github.com/3CORESec/SIEGMA/issues) or ping 
 
 
 ### Authors
-- [heyibrahimkhan](https://github.com/heyibrahimkhan)
-- [wesley587](https://github.com/wesley587)
+- [heyibrahimkhan](https://github.com/heyibrahimhan)
 
 ### Contributors
-
 - [DiogoBraz](https://github.com/DiogoBraz)
 - [w0rk3r](https://github.com/w0rk3r)
 - [Tiago Faria](https://github.com/0xtf)
+- [wesley587](https://github.com/wesley587)

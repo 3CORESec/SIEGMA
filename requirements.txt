@@ -1,6 +1,0 @@
-pendulum
-Pillow
-pyfiglet
-requests
-colorlog
-PyYAML

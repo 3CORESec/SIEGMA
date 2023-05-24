@@ -1,5 +1,3 @@
 # Platform configurations
 
-This directory contains the mapping files and configuration for each of the supported platforms as well as example queries and use cases. Each folder will also document any changes you might have to do before being able to run SIEGMA.
-
-Please select the desired SIEM from the folders above for additional information.
+This directory includes configuration files, example queries, and use cases for each of the supported platforms. Each folder provides documentation on any necessary modifications required before running SIEGMA. To obtain more information about a specific SIEM, please select the corresponding folder from the options above.

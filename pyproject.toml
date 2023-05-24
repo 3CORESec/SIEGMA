@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "siegma"
+version = "0.2.0"
+description = "This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the Sigma rule format and engine."
+authors = authors = ["heyibrahimkhan <https://github.com/heyibrahimkhan>", "wesley587 <https://github.com/wesley587>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+colorlog = "^6.7.0"
+pysigma = "^0.9.8"
+pysigma-backend-elasticsearch = "^1.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

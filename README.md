@@ -1,5 +1,7 @@
 # SIEGMA
 
+<p align="center"><img align="center" src="siegma.png"></p>
+
 This project aims to automate the creation of SIEM rule consumables by leveraging a pre-defined set of configurations/mappings and by utilizing the [Sigma](https://github.com/Neo23x0/sigma) rule format and engine.
 
 <p align="center"><img align="center" src="https://i.imgur.com/zrtGgyb.png"></p>

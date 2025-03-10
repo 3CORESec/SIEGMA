@@ -9,6 +9,7 @@ from os.path import isfile, join
 # CheckIfSiegmaCompliant.py
 # By Wesley
 # https://github.com/wesley587
+# Modified to handle encoding errors
 
 # global vars
 exit_status_value = 0
@@ -45,21 +46,26 @@ class parsing:
         global exit_status_value
         error = dict()
         for x in file:
-            yaml_file = open(x, 'r', encoding='utf8')
-            detect_count = 0
-            local = x
-            error[local] = list()
-            for k in yaml_file:
-                if 'detection:' in k:
-                    detect_count += 1
-                if 'condition:' in k:
-                    for x in self.agg:
-                        if x in k:
-                            x = x.replace('(', '')
-                            error[local].append(f'\t* An unsupported Aggregation expression ({x}) is present on the sigma rule.')
+            try:
+                yaml_file = open(x, 'r', encoding='utf8')
+                detect_count = 0
+                local = x
+                error[local] = list()
+                for k in yaml_file:
+                    if 'detection:' in k:
+                        detect_count += 1
+                    if 'condition:' in k:
+                        for x in self.agg:
+                            if x in k:
+                                x = x.replace('(', '')
+                                error[local].append(f'\t* An unsupported Aggregation expression ({x}) is present on the sigma rule.')
 
-            if detect_count > 1:
-                error[local].append('\t* There is more than 1 instance of detection on this sigma rule.')
+                if detect_count > 1:
+                    error[local].append('\t* There is more than 1 instance of detection on this sigma rule.')
+            except UnicodeDecodeError:
+                print(f"WARNING: Skipping file due to encoding issues: {x}")
+                continue
+
         for k, v in error.items():
             if len(v) > 0:
                 exit_status_value = 1
@@ -73,21 +79,44 @@ class parsing:
         global exit_status_value
         error = dict()
         for x in files:
-            yaml_file = open(get_slashes().join([path, x]), 'r', encoding='utf8')
-            detect_count = 0
-            local = get_slashes().join([path, x])
-            error[local] = list()
-            for k in yaml_file:
-                if 'detection:' in k:
-                    detect_count += 1
-                if 'condition:' in k:
-                    for x in self.agg:
-                        if x in k:
-                            x = x.replace('(', '')
-                            error[local].append(f'\t* An unsupported Aggregation expression ({x}) is present on the sigma rule.')
+            file_path = get_slashes().join([path, x])
+            try:
+                # Try UTF-8 first
+                try:
+                    yaml_file = open(file_path, 'r', encoding='utf8')
+                    file_content = yaml_file.readlines()
+                    yaml_file.close()
+                except UnicodeDecodeError:
+                    # Try different encodings
+                    try:
+                        yaml_file = open(file_path, 'r', encoding='latin-1')
+                        file_content = yaml_file.readlines()
+                        yaml_file.close()
+                    except Exception as e:
+                        print(f"WARNING: Skipping file due to encoding issues: {file_path}")
+                        print(f"Error: {str(e)}")
+                        continue
+                
+                detect_count = 0
+                local = file_path
+                error[local] = list()
+                
+                for k in file_content:
+                    if 'detection:' in k:
+                        detect_count += 1
+                    if 'condition:' in k:
+                        for agg in self.agg:
+                            if agg in k:
+                                agg_name = agg.replace('(', '')
+                                error[local].append(f'\t* An unsupported Aggregation expression ({agg_name}) is present on the sigma rule.')
 
-            if detect_count > 1:
-                error[local].append('\t* There is more than 1 instance of detection on this sigma rule.')
+                if detect_count > 1:
+                    error[local].append('\t* There is more than 1 instance of detection on this sigma rule.')
+                    
+            except Exception as e:
+                print(f"WARNING: Error processing file {file_path}: {str(e)}")
+                continue
+                
         for k, v in error.items():
             if len(v) > 0:
                 exit_status_value = 1
@@ -108,10 +137,6 @@ def get_slashes():
     ret = '\\'
     if os.name != 'nt': 
         ret = '/'
-        # print('Non-windows machine...')
-    # else:
-    #     print('Windows machine...')
-    # print('Returning {}...'.format(ret))
     return ret
 
 
@@ -121,6 +146,12 @@ def main():
     path = vars(parse.parse_args())
     dir = path['p']
     folders = ''
+    
+    # Check if path exists
+    if not os.path.exists(dir):
+        print(f"ERROR: The path '{dir}' does not exist.")
+        sys.exit(1)
+        
     # for single file
     if isfile(dir): 
         file = dir
@@ -131,15 +162,21 @@ def main():
         folders = [x for x in listdir(dir) if not isfile(join(dir, x))]
         if folders == []: 
             # if single folder with n files
-            folders = [x for x in listdir(dir) if isfile(join(dir, x))]
-            start = parsing(dir=dir)
-            start.Parsing_files(folders, dir)
+            files_in_dir = [x for x in listdir(dir) if isfile(join(dir, x))]
+            if files_in_dir == []:
+                print(f"WARNING: No files found in directory '{dir}'")
+            else:
+                print(f"Found {len(files_in_dir)} files in directory '{dir}'")
+                start = parsing(dir=dir)
+                start.Parsing_files(files_in_dir, dir)
         else:
+            print(f"Found {len(folders)} subdirectories in '{dir}'")
             start = parsing(dir=dir)
             start.firstParsing(folders)
-        # pprint(folders)
+    
     print('Ending script with exit status {}'.format(exit_status_value))
     sys.exit(exit_status_value)
 
 
-main()
+if __name__ == "__main__":
+    main()
